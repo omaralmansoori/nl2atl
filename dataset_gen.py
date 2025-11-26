@@ -490,11 +490,19 @@ def load_dataset(path: Path) -> list[NLATLPair]:
         List of NLATLPair objects
     """
     pairs = []
+    # Known fields in NLATLPair dataclass
+    known_fields = {
+        "nl_text", "atl_formula", "agents", "coalition", "atoms",
+        "template_id", "llm_provider", "critique_ok", "critique_issues",
+        "confidence", "metadata"
+    }
     with open(path, "r", encoding="utf-8") as f:
         for line in f:
             if line.strip():
                 data = json.loads(line)
-                pairs.append(NLATLPair(**data))
+                # Only pass known fields to avoid errors with extra data
+                filtered_data = {k: v for k, v in data.items() if k in known_fields}
+                pairs.append(NLATLPair(**filtered_data))
     return pairs
 
 

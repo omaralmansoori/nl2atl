@@ -161,6 +161,14 @@ def spot_check_examples(
     samples = random.sample(entries, min(k, len(entries)))
 
     results = []
+    
+    # Create client once outside the loop
+    if client is None:
+        try:
+            client = get_llm_client(provider)
+        except ValueError as e:
+            # Return early if we can't create a client
+            return [{"error": str(e), "status": "error"} for _ in samples]
 
     for entry in samples:
         nl = entry.get("nl_text", "")
@@ -174,9 +182,6 @@ def spot_check_examples(
 
         # Run critique
         try:
-            if client is None:
-                client = get_llm_client(provider)
-
             critique = critique_nl_atl_pair(nl, atl, client=client)
             result["critique"] = critique
             result["status"] = "ok" if critique.get("ok") else "issues_found"
