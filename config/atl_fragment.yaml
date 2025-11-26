@@ -1,0 +1,37 @@
+# ATL Fragment Configuration
+# Defines allowed operators, nesting depth limits, and coalition constraints
+
+# Allowed temporal operators
+temporal_operators:
+  - X   # neXt
+  - F   # Future (eventually)
+  - G   # Globally (always)
+  - U   # Until
+
+# Allowed boolean connectives
+boolean_connectives:
+  - "∧"   # AND
+  - "∨"   # OR
+  - "¬"   # NOT
+  - "→"   # IMPLIES
+
+# Strategic modality
+strategic_modality:
+  # Coalition operators use ⟨⟨ and ⟩⟩
+  coalition_open: "⟨⟨"
+  coalition_close: "⟩⟩"
+
+# Constraints on formulas
+constraints:
+  max_nesting_depth: 4    # Maximum depth of nested temporal/strategic operators
+  max_coalition_size: 5   # Maximum number of agents in a coalition
+  max_agents: 10          # Maximum total number of agents in the system
+
+# Atom naming conventions
+atoms:
+  prefix: "p"           # Atomic propositions are named p1, p2, etc.
+  max_atoms: 20         # Maximum number of distinct atomic propositions
+
+# Agent naming conventions
+agents:
+  prefix: "a"           # Agents are named a1, a2, etc.

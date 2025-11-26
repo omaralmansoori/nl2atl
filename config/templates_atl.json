@@ -1,0 +1,128 @@
+{
+  "version": "1.0",
+  "description": "Seed ATL templates with corresponding NL templates for dataset generation",
+  "templates": [
+    {
+      "id": "safety_basic",
+      "category": "safety",
+      "atl_template": "⟨⟨{coalition}⟩⟩ G ¬{p}",
+      "nl_template": "The coalition {coalition_nl} can ensure that {p_nl} never happens.",
+      "description": "Agents ensure something bad never happens"
+    },
+    {
+      "id": "safety_always",
+      "category": "safety",
+      "atl_template": "⟨⟨{coalition}⟩⟩ G {p}",
+      "nl_template": "The coalition {coalition_nl} can guarantee that {p_nl} always holds.",
+      "description": "Agents maintain an invariant"
+    },
+    {
+      "id": "reachability_basic",
+      "category": "reachability",
+      "atl_template": "⟨⟨{coalition}⟩⟩ F {p}",
+      "nl_template": "The coalition {coalition_nl} can eventually make {p_nl} happen.",
+      "description": "Agents can eventually achieve a goal"
+    },
+    {
+      "id": "reachability_next",
+      "category": "reachability",
+      "atl_template": "⟨⟨{coalition}⟩⟩ X {p}",
+      "nl_template": "The coalition {coalition_nl} can make {p_nl} happen in the next step.",
+      "description": "Agents achieve something immediately"
+    },
+    {
+      "id": "until_basic",
+      "category": "until",
+      "atl_template": "⟨⟨{coalition}⟩⟩ ({p} U {q})",
+      "nl_template": "The coalition {coalition_nl} can ensure {p_nl} holds until {q_nl} becomes true.",
+      "description": "Agents maintain a condition until another is achieved"
+    },
+    {
+      "id": "response_basic",
+      "category": "response",
+      "atl_template": "⟨⟨{coalition}⟩⟩ G ({p} → F {q})",
+      "nl_template": "The coalition {coalition_nl} can guarantee that whenever {p_nl}, eventually {q_nl}.",
+      "description": "Response pattern - trigger leads to eventual response"
+    },
+    {
+      "id": "response_next",
+      "category": "response",
+      "atl_template": "⟨⟨{coalition}⟩⟩ G ({p} → X {q})",
+      "nl_template": "The coalition {coalition_nl} can ensure that whenever {p_nl}, then {q_nl} in the next step.",
+      "description": "Immediate response pattern"
+    },
+    {
+      "id": "avoidance",
+      "category": "safety",
+      "atl_template": "⟨⟨{coalition}⟩⟩ G (¬{p} ∨ ¬{q})",
+      "nl_template": "The coalition {coalition_nl} can always prevent {p_nl} and {q_nl} from being true simultaneously.",
+      "description": "Mutual exclusion / avoidance pattern"
+    },
+    {
+      "id": "conditional_reachability",
+      "category": "reachability",
+      "atl_template": "⟨⟨{coalition}⟩⟩ ({p} → F {q})",
+      "nl_template": "If {p_nl}, then the coalition {coalition_nl} can eventually achieve {q_nl}.",
+      "description": "Conditional reachability"
+    },
+    {
+      "id": "stability",
+      "category": "safety",
+      "atl_template": "⟨⟨{coalition}⟩⟩ (F {p} → G {p})",
+      "nl_template": "Once the coalition {coalition_nl} achieves {p_nl}, they can maintain it forever.",
+      "description": "Stability - once achieved, stays achieved"
+    }
+  ],
+  "few_shot_examples": [
+    {
+      "nl": "Agents 1 and 2 can ensure the system never crashes.",
+      "atl": "⟨⟨1,2⟩⟩ G ¬crash"
+    },
+    {
+      "nl": "The robot can eventually reach the goal location.",
+      "atl": "⟨⟨robot⟩⟩ F goal_reached"
+    },
+    {
+      "nl": "The controller can keep the temperature stable until the alarm is triggered.",
+      "atl": "⟨⟨controller⟩⟩ (temp_stable U alarm)"
+    },
+    {
+      "nl": "Whenever a request is made, the server team can eventually respond.",
+      "atl": "⟨⟨server_team⟩⟩ G (request → F response)"
+    },
+    {
+      "nl": "The driver can make the car stop in the next moment.",
+      "atl": "⟨⟨driver⟩⟩ X car_stopped"
+    }
+  ],
+  "atom_phrases": {
+    "crash": "the system crashes",
+    "error": "an error occurs",
+    "safe": "the system is safe",
+    "goal_reached": "the goal is reached",
+    "request": "a request is made",
+    "response": "a response is given",
+    "alarm": "the alarm is triggered",
+    "temp_stable": "the temperature is stable",
+    "power_on": "the power is on",
+    "connected": "the connection is established",
+    "authenticated": "the user is authenticated",
+    "completed": "the task is completed",
+    "waiting": "the system is waiting",
+    "active": "the process is active",
+    "idle": "the system is idle"
+  },
+  "coalition_phrases": {
+    "1": "agent 1",
+    "2": "agent 2",
+    "3": "agent 3",
+    "1,2": "agents 1 and 2",
+    "1,3": "agents 1 and 3",
+    "2,3": "agents 2 and 3",
+    "1,2,3": "agents 1, 2, and 3",
+    "robot": "the robot",
+    "controller": "the controller",
+    "server_team": "the server team",
+    "driver": "the driver"
+  }
+}
