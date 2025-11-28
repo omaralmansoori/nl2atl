@@ -49,6 +49,7 @@ from __future__ import annotations
 
 import json
 import os
+import random
 import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
@@ -898,6 +899,317 @@ def translate_batch(
             progress_callback(i + 1, total)
     
     return results
+
+
+# =============================================================================
+# LLM-Based NL Generation
+# =============================================================================
+
+
+def build_nl_generation_prompt(
+    domain: Optional[str] = None,
+    pattern: Optional[str] = None,
+    num_examples: int = 5,
+    include_few_shot: bool = True,
+) -> str:
+    """
+    Build a prompt for generating diverse NL requirements.
+    
+    This generates natural language requirements that express
+    temporal/strategic properties suitable for ATL translation.
+    
+    Args:
+        domain: Optional domain context (e.g., 'robotics', 'distributed_systems')
+        pattern: Optional pattern type (e.g., 'safety', 'liveness', 'response')
+        num_examples: Number of NL statements to generate
+        include_few_shot: Whether to include example outputs
+        
+    Returns:
+        A formatted prompt for NL generation
+    """
+    config = load_templates_config()
+    
+    parts = [
+        "You are an expert in formal verification and requirements engineering. "
+        "Your task is to generate diverse, natural-sounding requirements that "
+        "express temporal or strategic properties.\n"
+    ]
+    
+    # Add context about ATL
+    parts.append(
+        "These requirements should describe what agents or coalitions can achieve "
+        "or guarantee. Use varied sentence structures, modal verbs, and phrasing.\n"
+    )
+    
+    # Domain context
+    if domain and domain in config.get("domains", {}):
+        domain_info = config["domains"][domain]
+        agents = ", ".join(domain_info.get("agents", []))
+        atoms = list(domain_info.get("atoms", {}).keys())
+        
+        parts.append(f"\nDomain: {domain}")
+        parts.append(f"Typical agents: {agents}")
+        parts.append(f"Typical propositions: {', '.join(atoms[:8])}\n")
+    
+    # Pattern guidance
+    pattern_guidance = {
+        "safety": "Focus on properties about avoiding bad states or maintaining invariants (e.g., 'never crashes', 'always safe').",
+        "liveness": "Focus on properties about eventually achieving goals (e.g., 'eventually reaches', 'can achieve').",
+        "response": "Focus on if-then properties (e.g., 'whenever X happens, Y eventually follows').",
+        "until": "Focus on properties that hold until something else happens.",
+        "fairness": "Focus on properties about repeated or infinitely-often occurrences.",
+    }
+    
+    if pattern and pattern in pattern_guidance:
+        parts.append(f"\nPattern focus: {pattern_guidance[pattern]}\n")
+    
+    # Few-shot examples
+    if include_few_shot:
+        few_shot = config.get("few_shot_examples", [])
+        if few_shot:
+            parts.append("\nExample requirements (for style reference):")
+            for ex in few_shot[:5]:
+                parts.append(f"- {ex['nl']}")
+    
+    # Instructions
+    parts.append(f"""
+
+Generate {num_examples} unique natural language requirements. Each should:
+1. Describe what some agent(s) or coalition can ensure, achieve, or guarantee
+2. Use varied sentence structures (active/passive, different modal verbs)
+3. Be specific and realistic (not too abstract)
+4. Express clear temporal relationships (always, eventually, until, whenever)
+
+Output format: One requirement per line, numbered 1-{num_examples}.
+Do not include any ATL formulas or explanations.""")
+    
+    return "\n".join(parts)
+
+
+def generate_nl_statements(
+    num_statements: int = 10,
+    domain: Optional[str] = None,
+    pattern: Optional[str] = None,
+    temperature: float = 0.9,
+    client: Optional[LLMClient] = None,
+    provider: str = "openai",
+) -> List[str]:
+    """
+    Generate diverse NL statements using an LLM.
+    
+    Uses higher temperature for creative, diverse outputs.
+    
+    Args:
+        num_statements: Number of statements to generate
+        domain: Optional domain context
+        pattern: Optional pattern type
+        temperature: LLM temperature (higher = more diverse)
+        client: Optional pre-configured LLM client
+        provider: LLM provider to use
+        
+    Returns:
+        List of generated NL statements
+    """
+    if client is None:
+        client = get_llm_client(provider)
+    
+    prompt = build_nl_generation_prompt(
+        domain=domain,
+        pattern=pattern,
+        num_examples=num_statements,
+    )
+    
+    response = client.generate(
+        prompt, 
+        max_tokens=1024, 
+        temperature=temperature,
+    )
+    
+    # Parse numbered list
+    statements = []
+    for line in response.text.strip().split("\n"):
+        line = line.strip()
+        if not line:
+            continue
+        # Remove numbering
+        line = re.sub(r"^\d+[\.\)\:]?\s*", "", line)
+        # Remove quotes if present
+        line = line.strip('"\'')
+        if line:
+            statements.append(line)
+    
+    return statements[:num_statements]
+
+
+def generate_nl_atl_pair(
+    domain: Optional[str] = None,
+    pattern: Optional[str] = None,
+    nl_temperature: float = 0.9,
+    atl_temperature: float = 0.1,
+    client: Optional[LLMClient] = None,
+    provider: str = "openai",
+    validate: bool = True,
+) -> Optional[Dict[str, Any]]:
+    """
+    Generate a single NL-ATL pair using two-stage LLM process.
+    
+    Stage 1: Generate creative NL (higher temperature)
+    Stage 2: Translate to ATL (lower temperature for accuracy)
+    
+    Args:
+        domain: Optional domain context
+        pattern: Optional pattern type
+        nl_temperature: Temperature for NL generation (default: 0.9)
+        atl_temperature: Temperature for ATL translation (default: 0.1)
+        client: Optional pre-configured LLM client
+        provider: LLM provider to use
+        validate: Whether to validate the ATL formula
+        
+    Returns:
+        Dictionary with 'nl', 'atl', 'domain', 'pattern', or None if failed
+    """
+    if client is None:
+        client = get_llm_client(provider)
+    
+    # Stage 1: Generate NL
+    nl_statements = generate_nl_statements(
+        num_statements=1,
+        domain=domain,
+        pattern=pattern,
+        temperature=nl_temperature,
+        client=client,
+    )
+    
+    if not nl_statements:
+        return None
+    
+    nl_text = nl_statements[0]
+    
+    # Stage 2: Translate to ATL with lower temperature
+    config = {
+        "temperature": atl_temperature,
+    }
+    
+    formulas = translate_nl_to_atl(
+        nl_text,
+        config=config,
+        client=client,
+        validate=validate,
+    )
+    
+    if not formulas:
+        return None
+    
+    return {
+        "nl": nl_text,
+        "atl": formulas[0],
+        "domain": domain,
+        "pattern": pattern,
+    }
+
+
+def generate_nl_atl_batch(
+    num_pairs: int = 10,
+    domains: Optional[List[str]] = None,
+    patterns: Optional[List[str]] = None,
+    nl_temperature: float = 0.9,
+    atl_temperature: float = 0.1,
+    client: Optional[LLMClient] = None,
+    provider: str = "openai",
+    validate: bool = True,
+    cross_check: bool = False,
+    progress_callback: Optional[callable] = None,
+) -> List[Dict[str, Any]]:
+    """
+    Generate multiple NL-ATL pairs with domain and pattern diversity.
+    
+    This is the main batch generation function for LLM-generated pairs.
+    
+    Args:
+        num_pairs: Number of pairs to generate
+        domains: List of domains to sample from (None = all domains)
+        patterns: List of patterns to sample from (None = all patterns)
+        nl_temperature: Temperature for NL generation
+        atl_temperature: Temperature for ATL translation
+        client: Optional pre-configured LLM client
+        provider: LLM provider to use
+        validate: Whether to validate ATL formulas
+        cross_check: Whether to cross-check pairs with critique
+        progress_callback: Optional callback(i, total) for progress
+        
+    Returns:
+        List of successful NL-ATL pair dictionaries
+    """
+    if client is None:
+        client = get_llm_client(provider)
+    
+    # Load available domains and patterns
+    config = load_templates_config()
+    available_domains = list(config.get("domains", {}).keys())
+    available_patterns = ["safety", "liveness", "response", "until", "fairness"]
+    
+    if domains is None:
+        domains = available_domains
+    if patterns is None:
+        patterns = available_patterns
+    
+    pairs = []
+    attempts = 0
+    max_attempts = num_pairs * 3  # Allow some failures
+    
+    while len(pairs) < num_pairs and attempts < max_attempts:
+        attempts += 1
+        
+        # Sample domain and pattern
+        domain = random.choice(domains) if domains else None
+        pattern = random.choice(patterns) if patterns else None
+        
+        try:
+            result = generate_nl_atl_pair(
+                domain=domain,
+                pattern=pattern,
+                nl_temperature=nl_temperature,
+                atl_temperature=atl_temperature,
+                client=client,
+                validate=validate,
+            )
+            
+            if result is None:
+                continue
+            
+            # Optional cross-checking
+            if cross_check:
+                critique = critique_nl_atl_pair(
+                    result["nl"],
+                    result["atl"],
+                    client=client,
+                )
+                result["critique_ok"] = critique.get("ok", False)
+                result["critique_issues"] = critique.get("issues", [])
+                
+                if not critique.get("ok", False):
+                    # Try suggested fix if available
+                    if critique.get("suggested_fix"):
+                        is_valid, _ = validate_atl_string(critique["suggested_fix"])
+                        if is_valid:
+                            result["atl"] = critique["suggested_fix"]
+                            result["critique_ok"] = True
+                            result["critique_issues"] = ["Fixed by LLM"]
+                        else:
+                            continue  # Skip this pair
+                    else:
+                        continue  # Skip invalid pairs
+            
+            pairs.append(result)
+            
+            if progress_callback:
+                progress_callback(len(pairs), num_pairs)
+                
+        except Exception as e:
+            # Log but continue
+            continue
+    
+    return pairs
 
 
 # =============================================================================

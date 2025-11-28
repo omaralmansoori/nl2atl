@@ -7,57 +7,94 @@ Generates synthetic NL-ATL pairs for training and evaluation.
 Pipeline Overview
 -----------------
 ```
-Templates → Template Instantiation → Base Pairs
-                                        ↓
-                              LLM Paraphrasing → Extended Pairs
-                                        ↓
-                              Cross-Checking → Validated Pairs
-                                        ↓
-                              Output (JSONL/CSV)
+                    ┌─────────────────────────────────────────┐
+                    │           Generation Modes              │
+                    └─────────────────────────────────────────┘
+                              │
+          ┌───────────────────┼───────────────────┐
+          ▼                   ▼                   ▼
+    ┌───────────┐      ┌───────────┐      ┌───────────┐
+    │ Template  │      │   LLM     │      │  Hybrid   │
+    │   Mode    │      │   Mode    │      │   Mode    │
+    └───────────┘      └───────────┘      └───────────┘
+          │                   │                   │
+          ▼                   ▼                   ▼
+    Template         LLM generates       Template base +
+    Instantiation    NL (high temp)      LLM paraphrasing
+          │                   │                   │
+          │                   ▼                   │
+          │           LLM translates              │
+          │           to ATL (low temp)           │
+          └───────────────────┼───────────────────┘
+                              ▼
+                    ┌─────────────────┐
+                    │  Cross-Check    │
+                    │   (Optional)    │
+                    └─────────────────┘
+                              │
+                              ▼
+                    ┌─────────────────┐
+                    │  Output Dataset │
+                    └─────────────────┘
 ```
 
 Features
 --------
-1. **Template Instantiation**: Combine ATL templates with concrete coalitions
+1. **Template Mode**: Combine ATL templates with concrete coalitions
    and atomic propositions to generate ground truth pairs.
 
-2. **LLM Paraphrasing**: Use LLMs to generate varied natural language 
-   phrasings for each template instance.
+2. **LLM Mode**: Use LLM to generate creative NL statements (high temperature),
+   then translate to ATL (low temperature) for accuracy.
 
-3. **Cross-Checking**: Validate pairs using LLM critique to filter 
+3. **Hybrid Mode**: Template-based generation with LLM paraphrasing for variety.
+
+4. **Cross-Checking**: Validate pairs using LLM critique to filter 
    low-quality entries.
 
-4. **CLI Interface**: Command-line tool for batch generation.
+5. **Domain Diversity**: Support for multiple domains with domain-specific
+   vocabulary and agent names.
 
 For AI Integration
 ------------------
 Key classes and functions:
 - `DatasetGenerator`: Main generator class with configurable pipeline
 - `GenerationConfig`: Configuration dataclass for generation options
-- `NLATLPair`: Data structure for individual pairs
+- `GenerationMode`: Enum for template/llm/hybrid modes
+- `NLATLPair`: Data structure for individual pairs (alias for ATLSample)
 - `sample_coalitions()`, `sample_atoms()`: Sampling utilities
 
 Example Usage
 -------------
->>> from dataset_gen import DatasetGenerator, GenerationConfig
+>>> from dataset_gen import DatasetGenerator, GenerationConfig, GenerationMode
 >>>
+>>> # Template-only generation (fast, no API)
 >>> config = GenerationConfig(
 ...     num_examples=100,
-...     use_llm_paraphrasing=False,  # For testing without API
-...     use_cross_checking=False,
+...     mode=GenerationMode.TEMPLATE,
 ... )
 >>> generator = DatasetGenerator(config)
 >>> pairs = generator.generate()
->>> print(len(pairs))
-100
+>>>
+>>> # LLM generation (creative, requires API)
+>>> config = GenerationConfig(
+...     num_examples=50,
+...     mode=GenerationMode.LLM,
+...     nl_temperature=0.9,
+...     atl_temperature=0.1,
+... )
+>>> generator = DatasetGenerator(config)
+>>> pairs = generator.generate()
 
 CLI Usage
 ---------
-# Generate without LLM (template-only)
-python -m dataset_gen --num-examples 100 --no-paraphrase --no-crosscheck
+# Template mode (fast, no API)
+python -m dataset_gen --mode template --num-examples 100
 
-# Generate with full pipeline
-python -m dataset_gen --num-examples 500 --out data/train.jsonl --verbose
+# LLM mode (creative, requires API)
+python -m dataset_gen --mode llm --num-examples 50 --nl-temp 0.9 --atl-temp 0.1
+
+# Hybrid mode (template base + LLM paraphrasing)
+python -m dataset_gen --mode hybrid --num-examples 200 --verbose
 """
 
 from __future__ import annotations
@@ -70,6 +107,7 @@ import random
 import sys
 from dataclasses import dataclass, field, asdict
 from datetime import datetime
+from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -80,6 +118,10 @@ from nl2atl import (
     paraphrase_nl,
     load_templates_config,
     LLMClient,
+    generate_nl_statements,
+    generate_nl_atl_pair,
+    generate_nl_atl_batch,
+    translate_nl_to_atl,
 )
 from sample_store import (
     ATLSample,
@@ -88,6 +130,17 @@ from sample_store import (
     Domain,
     DOMAIN_KEYWORDS,
 )
+
+
+# =============================================================================
+# Generation Modes
+# =============================================================================
+
+class GenerationMode(str, Enum):
+    """Dataset generation modes."""
+    TEMPLATE = "template"    # Pure template-based generation
+    LLM = "llm"              # LLM generates NL, then translates to ATL
+    HYBRID = "hybrid"        # Template base with LLM paraphrasing
 
 
 # =============================================================================
@@ -353,8 +406,19 @@ class GenerationConfig:
     
     Attributes:
         num_examples: Target number of examples to generate
+        mode: Generation mode (template, llm, or hybrid)
+        
+        # Template mode options
         paraphrases_per_template: Number of paraphrases per base pair
-        use_llm_paraphrasing: Enable LLM-based paraphrasing
+        
+        # LLM mode options  
+        nl_temperature: Temperature for NL generation (higher = more creative)
+        atl_temperature: Temperature for ATL translation (lower = more accurate)
+        domains: List of domains to sample from (None = all)
+        patterns: List of patterns to sample from (None = all)
+        
+        # Common options
+        use_llm_paraphrasing: Enable LLM-based paraphrasing (for hybrid/template modes)
         use_cross_checking: Enable LLM-based quality checking
         verification_provider: Optional provider override for verification
         llm_provider: Provider for LLM calls
@@ -364,7 +428,18 @@ class GenerationConfig:
         verbose: Print progress information
     """
     num_examples: int = 100
+    mode: GenerationMode = GenerationMode.TEMPLATE
+    
+    # Template mode options
     paraphrases_per_template: int = 3
+    
+    # LLM mode options
+    nl_temperature: float = 0.9
+    atl_temperature: float = 0.1
+    domains: Optional[List[str]] = None
+    patterns: Optional[List[str]] = None
+    
+    # Common options
     use_llm_paraphrasing: bool = True
     use_cross_checking: bool = True
     verification_provider: Optional[str] = None
@@ -379,6 +454,7 @@ class GenerationConfig:
     min_coalition_size: int = 1
     max_coalition_size: int = 5
     max_nesting_depth: int = 4
+    use_domain_vocabulary: bool = True  # Use domain-specific atoms/agents
 
 
 # =============================================================================
@@ -390,15 +466,22 @@ class DatasetGenerator:
     """
     Generator for NL-ATL pair datasets.
     
-    Implements the full generation pipeline:
-    1. Load templates from configuration
-    2. Generate base pairs through template instantiation
-    3. Optionally paraphrase NL texts using LLM
-    4. Optionally cross-check pairs using LLM critique
-    5. Output validated dataset
+    Supports three generation modes:
+    
+    1. TEMPLATE: Pure template-based generation (fast, no API needed)
+       - Instantiates templates with sampled coalitions and atoms
+       - Uses NL template variations for diversity
+       
+    2. LLM: LLM-generated pairs (creative, requires API)
+       - Generates NL statements with high temperature
+       - Translates to ATL with low temperature for accuracy
+       
+    3. HYBRID: Template base with LLM paraphrasing
+       - Starts with template instantiation
+       - Uses LLM to paraphrase for variety
     
     Example:
-        >>> config = GenerationConfig(num_examples=50)
+        >>> config = GenerationConfig(num_examples=50, mode=GenerationMode.TEMPLATE)
         >>> generator = DatasetGenerator(config)
         >>> pairs = generator.generate()
     """
@@ -460,28 +543,104 @@ class DatasetGenerator:
             {
                 "id": "safety_basic",
                 "atl_template": "⟨⟨{coalition}⟩⟩ G ¬{p}",
-                "nl_template": "The coalition {coalition_nl} can ensure that {p_nl} never happens.",
+                "nl_templates": ["The coalition {coalition_nl} can ensure that {p_nl} never happens."],
             },
             {
                 "id": "reachability_basic",
                 "atl_template": "⟨⟨{coalition}⟩⟩ F {p}",
-                "nl_template": "The coalition {coalition_nl} can eventually make {p_nl} happen.",
+                "nl_templates": ["The coalition {coalition_nl} can eventually make {p_nl} happen."],
             },
             {
                 "id": "safety_always",
                 "atl_template": "⟨⟨{coalition}⟩⟩ G {p}",
-                "nl_template": "The coalition {coalition_nl} can guarantee that {p_nl} always holds.",
+                "nl_templates": ["The coalition {coalition_nl} can guarantee that {p_nl} always holds."],
             },
         ]
+
+    def _get_domain_vocabulary(self, domain: str) -> Tuple[List[str], Dict[str, str]]:
+        """
+        Get domain-specific agents and atoms.
+        
+        Args:
+            domain: Domain name
+            
+        Returns:
+            Tuple of (agent_list, atom_phrases_dict)
+        """
+        templates_config = load_templates_config()
+        domains = templates_config.get("domains", {})
+        
+        if domain in domains:
+            domain_info = domains[domain]
+            agents = domain_info.get("agents", [])
+            atoms = domain_info.get("atoms", {})
+            return agents, atoms
+        
+        return [], {}
+
+    def _sample_domain_coalition(self, domain: Optional[str] = None) -> set:
+        """
+        Sample a coalition, optionally from a specific domain.
+        
+        Args:
+            domain: Optional domain to sample from
+            
+        Returns:
+            Coalition set
+        """
+        if domain and self.config.use_domain_vocabulary:
+            agents, _ = self._get_domain_vocabulary(domain)
+            if agents:
+                # Sample 1-2 agents from domain
+                num_agents = random.randint(1, min(2, len(agents)))
+                selected = random.sample(agents, num_agents)
+                return set(selected)
+        
+        # Fall back to generic sampling
+        coalitions = sample_coalitions(
+            max_agents=self.config.max_agents,
+            num_samples=1,
+            include_named=self.config.include_named_agents,
+        )
+        return coalitions[0] if coalitions else {"1"}
+
+    def _sample_domain_atoms(
+        self, 
+        num_atoms: int, 
+        domain: Optional[str] = None
+    ) -> List[Tuple[str, str]]:
+        """
+        Sample atoms, optionally from a specific domain.
+        
+        Args:
+            num_atoms: Number of atoms to sample
+            domain: Optional domain to sample from
+            
+        Returns:
+            List of (atom_name, phrase) tuples
+        """
+        if domain and self.config.use_domain_vocabulary:
+            _, domain_atoms = self._get_domain_vocabulary(domain)
+            if domain_atoms:
+                atoms = list(domain_atoms.items())
+                random.shuffle(atoms)
+                return atoms[:num_atoms]
+        
+        # Fall back to default atoms
+        return sample_atoms(num_atoms, self.atom_phrases)
 
     def generate_base_pairs(self) -> List[ATLSample]:
         """
         Generate base NL-ATL pairs from templates.
         
+        Uses the expanded template format with multiple NL variations.
+        
         Returns:
-            List of NLATLPair objects
+            List of ATLSample objects
         """
         pairs = []
+        templates_config = load_templates_config()
+        available_domains = list(templates_config.get("domains", {}).keys())
         
         # Calculate how many instantiations per template
         base_per_template = max(
@@ -490,21 +649,41 @@ class DatasetGenerator:
         )
 
         for template in self.templates:
-            # Generate coalitions for this template
-            coalitions = sample_coalitions(
-                max_agents=self.config.max_agents,
-                num_samples=base_per_template,
-                include_named=self.config.include_named_agents,
-            )
+            # Get NL templates (support both old and new format)
+            nl_templates = template.get("nl_templates", [])
+            if not nl_templates and "nl_template" in template:
+                nl_templates = [template["nl_template"]]
+            
+            if not nl_templates:
+                self._log(f"Skipping template {template.get('id', 'unknown')}: no NL templates")
+                continue
 
-            for coalition in coalitions:
+            for _ in range(base_per_template):
+                # Sample a domain for vocabulary diversity
+                domain = random.choice(available_domains) if available_domains else None
+                
+                # Sample coalition (domain-aware)
+                coalition = self._sample_domain_coalition(domain)
+                
                 # Determine how many atoms we need
                 atl_template = template["atl_template"]
                 num_atoms = sum(1 for ph in ["{p}", "{q}", "{r}"] if ph in atl_template)
-                atoms = sample_atoms(num_atoms, self.atom_phrases)
+                atoms = self._sample_domain_atoms(num_atoms, domain)
+                
+                if len(atoms) < num_atoms:
+                    # Fall back to default atoms if domain doesn't have enough
+                    atoms = sample_atoms(num_atoms, self.atom_phrases)
+
+                # Choose a random NL template variation
+                nl_template_text = random.choice(nl_templates)
+                template_with_nl = {
+                    "atl_template": template["atl_template"],
+                    "nl_template": nl_template_text,
+                    "id": template.get("id", "unknown"),
+                }
 
                 try:
-                    atl, nl = instantiate_template(template, coalition, atoms)
+                    atl, nl = instantiate_template(template_with_nl, coalition, atoms)
                 except Exception as e:
                     self._log(f"Template instantiation failed: {e}")
                     continue
@@ -630,37 +809,156 @@ class DatasetGenerator:
 
         return checked
 
+    def generate_llm_pairs(self) -> List[ATLSample]:
+        """
+        Generate NL-ATL pairs using LLM (two-stage process).
+        
+        Stage 1: Generate creative NL statements (high temperature)
+        Stage 2: Translate to ATL (low temperature for accuracy)
+        
+        Returns:
+            List of ATLSample objects
+        """
+        client = self._get_generation_client()
+        pairs = []
+        
+        # Get available domains and patterns
+        templates_config = load_templates_config()
+        available_domains = list(templates_config.get("domains", {}).keys())
+        available_patterns = ["safety", "liveness", "response", "until", "fairness"]
+        
+        # Use configured domains/patterns or all available
+        domains = self.config.domains or available_domains
+        patterns = self.config.patterns or available_patterns
+        
+        self._log(f"  Using domains: {domains}")
+        self._log(f"  Using patterns: {patterns}")
+        self._log(f"  NL temperature: {self.config.nl_temperature}")
+        self._log(f"  ATL temperature: {self.config.atl_temperature}")
+        
+        attempts = 0
+        max_attempts = self.config.num_examples * 3
+        
+        while len(pairs) < self.config.num_examples and attempts < max_attempts:
+            attempts += 1
+            
+            # Sample domain and pattern for diversity
+            domain = random.choice(domains) if domains else None
+            pattern = random.choice(patterns) if patterns else None
+            
+            self._log(f"  [{len(pairs)+1}/{self.config.num_examples}] "
+                     f"Generating (domain={domain}, pattern={pattern})...")
+            
+            try:
+                # Stage 1: Generate NL with high temperature
+                nl_statements = generate_nl_statements(
+                    num_statements=1,
+                    domain=domain,
+                    pattern=pattern,
+                    temperature=self.config.nl_temperature,
+                    client=client,
+                )
+                
+                if not nl_statements:
+                    self._log(f"    Failed to generate NL statement")
+                    continue
+                
+                nl_text = nl_statements[0]
+                self._log(f"    NL: {nl_text[:60]}...")
+                
+                # Stage 2: Translate to ATL with low temperature
+                formulas = translate_nl_to_atl(
+                    nl_text,
+                    config={"temperature": self.config.atl_temperature},
+                    client=client,
+                    validate=True,
+                )
+                
+                if not formulas:
+                    self._log(f"    Failed to translate to valid ATL")
+                    continue
+                
+                atl_formula = formulas[0]
+                self._log(f"    ATL: {atl_formula}")
+                
+                # Create sample
+                pair = create_sample(
+                    nl_statement=nl_text,
+                    atl_formula=atl_formula,
+                    template_id=f"llm_{domain}_{pattern}" if domain and pattern else "llm_generated",
+                    llm_provider=self.config.llm_provider,
+                )
+                pairs.append(pair)
+                
+            except Exception as e:
+                self._log(f"    Error: {e}")
+                continue
+        
+        return pairs
+
     def generate(self) -> List[ATLSample]:
         """
-        Run the full generation pipeline.
+        Run the full generation pipeline based on configured mode.
+        
+        Modes:
+        - TEMPLATE: Pure template-based generation
+        - LLM: LLM generates NL, then translates to ATL
+        - HYBRID: Template base with LLM paraphrasing
         
         Returns:
             List of generated NL-ATL pairs
         """
         self._log("=" * 60)
         self._log("NL-ATL Dataset Generation")
+        self._log(f"Mode: {self.config.mode.value}")
         self._log("=" * 60)
         
-        # Step 1: Generate base pairs
-        self._log("\n[1/3] Generating base pairs from templates...")
-        pairs = self.generate_base_pairs()
-        self._log(f"  Generated {len(pairs)} base pairs")
-
-        # Step 2: Paraphrase
-        if self.config.use_llm_paraphrasing:
-            self._log("\n[2/3] Generating paraphrases...")
-            pairs = self.paraphrase_pairs(pairs)
-            self._log(f"  Total pairs after paraphrasing: {len(pairs)}")
-        else:
-            self._log("\n[2/3] Paraphrasing skipped (disabled)")
-
-        # Step 3: Cross-check
-        if self.config.use_cross_checking:
-            self._log("\n[3/3] Cross-checking pairs...")
-            pairs = self.cross_check_pairs(pairs)
-            self._log(f"  Pairs passing cross-check: {len(pairs)}")
-        else:
-            self._log("\n[3/3] Cross-checking skipped (disabled)")
+        pairs = []
+        
+        if self.config.mode == GenerationMode.TEMPLATE:
+            # Pure template mode - no LLM needed
+            self._log("\n[1/2] Generating pairs from templates...")
+            pairs = self.generate_base_pairs()
+            self._log(f"  Generated {len(pairs)} template-based pairs")
+            
+            # Skip LLM paraphrasing in pure template mode
+            self._log("\n[2/2] Cross-checking skipped (template mode)")
+            
+        elif self.config.mode == GenerationMode.LLM:
+            # LLM generation mode
+            self._log("\n[1/2] Generating pairs using LLM (two-stage)...")
+            pairs = self.generate_llm_pairs()
+            self._log(f"  Generated {len(pairs)} LLM-based pairs")
+            
+            # Cross-check LLM-generated pairs
+            if self.config.use_cross_checking:
+                self._log("\n[2/2] Cross-checking LLM-generated pairs...")
+                pairs = self.cross_check_pairs(pairs)
+                self._log(f"  Pairs passing cross-check: {len(pairs)}")
+            else:
+                self._log("\n[2/2] Cross-checking skipped (disabled)")
+            
+        elif self.config.mode == GenerationMode.HYBRID:
+            # Hybrid mode - template + paraphrasing
+            self._log("\n[1/3] Generating base pairs from templates...")
+            pairs = self.generate_base_pairs()
+            self._log(f"  Generated {len(pairs)} base pairs")
+            
+            # Paraphrase
+            if self.config.use_llm_paraphrasing:
+                self._log("\n[2/3] Generating paraphrases...")
+                pairs = self.paraphrase_pairs(pairs)
+                self._log(f"  Total pairs after paraphrasing: {len(pairs)}")
+            else:
+                self._log("\n[2/3] Paraphrasing skipped (disabled)")
+            
+            # Cross-check
+            if self.config.use_cross_checking:
+                self._log("\n[3/3] Cross-checking pairs...")
+                pairs = self.cross_check_pairs(pairs)
+                self._log(f"  Pairs passing cross-check: {len(pairs)}")
+            else:
+                self._log("\n[3/3] Cross-checking skipped (disabled)")
 
         # Limit to requested number
         if len(pairs) > self.config.num_examples:
@@ -757,17 +1055,35 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Generate 100 pairs without LLM (template-only, fast)
-  python -m dataset_gen --num-examples 100 --no-paraphrase --no-crosscheck
+  # Template mode (fast, no API needed)
+  python -m dataset_gen --mode template --num-examples 100
 
-  # Generate with full pipeline (requires API key)
-  python -m dataset_gen --num-examples 500 --out data/train.jsonl --verbose
+  # LLM mode (creative, requires API)
+  python -m dataset_gen --mode llm --num-examples 50 --nl-temp 0.9 --atl-temp 0.1
 
-  # Generate with specific seed for reproducibility
-  python -m dataset_gen --num-examples 200 --seed 42 --out data/test.jsonl
+  # Hybrid mode (template + paraphrasing, requires API)
+  python -m dataset_gen --mode hybrid --num-examples 200 --verbose
+
+  # LLM mode with specific domains
+  python -m dataset_gen --mode llm --num-examples 30 --domains robotics,safety_critical
+
+  # Generate with cross-checking for quality
+  python -m dataset_gen --mode llm --num-examples 50 --crosscheck --verbose
+
+  # Reproducible generation
+  python -m dataset_gen --mode template --num-examples 100 --seed 42 --out data/test.jsonl
         """
     )
 
+    # Mode selection
+    parser.add_argument(
+        "--mode", "-m",
+        type=str,
+        default="template",
+        choices=["template", "llm", "hybrid"],
+        help="Generation mode: 'template' (fast, no API), 'llm' (creative, API needed), 'hybrid' (template + paraphrasing)",
+    )
+    
     parser.add_argument(
         "--num-examples", "-n",
         type=int,
@@ -786,6 +1102,8 @@ Examples:
         default="jsonl",
         help="Output format (default: jsonl)",
     )
+    
+    # LLM options
     parser.add_argument(
         "--provider",
         type=str,
@@ -798,24 +1116,66 @@ Examples:
         type=str,
         default=None,
         choices=["openai", "azure", "mock"],
-        help="LLM provider to use for verification (default: match provider)",
+        help="LLM provider to use for verification/cross-checking (default: match --provider)",
     )
+    
+    # Temperature settings for LLM mode
+    parser.add_argument(
+        "--nl-temp",
+        type=float,
+        default=0.9,
+        help="Temperature for NL generation in LLM mode (default: 0.9, higher = more creative)",
+    )
+    parser.add_argument(
+        "--atl-temp",
+        type=float,
+        default=0.1,
+        help="Temperature for ATL translation in LLM mode (default: 0.1, lower = more accurate)",
+    )
+    
+    # Domain and pattern filtering
+    parser.add_argument(
+        "--domains",
+        type=str,
+        default=None,
+        help="Comma-separated list of domains to use (e.g., 'robotics,safety_critical'). "
+             "Available: autonomous_systems, distributed_systems, safety_critical, robotics, "
+             "access_control, industrial_control, networking, transaction_processing",
+    )
+    parser.add_argument(
+        "--patterns",
+        type=str,
+        default=None,
+        help="Comma-separated list of patterns to use (e.g., 'safety,liveness'). "
+             "Available: safety, liveness, response, until, fairness",
+    )
+    
+    # Paraphrasing options (for hybrid mode)
     parser.add_argument(
         "--paraphrases",
         type=int,
         default=3,
-        help="Paraphrases per template (default: 3)",
+        help="Paraphrases per template in hybrid mode (default: 3)",
     )
     parser.add_argument(
         "--no-paraphrase",
         action="store_true",
-        help="Disable LLM-based paraphrasing",
+        help="Disable LLM-based paraphrasing in hybrid mode",
+    )
+    
+    # Cross-checking
+    parser.add_argument(
+        "--crosscheck",
+        action="store_true",
+        help="Enable LLM-based cross-checking for quality validation",
     )
     parser.add_argument(
         "--no-crosscheck",
         action="store_true",
-        help="Disable LLM-based cross-checking",
+        help="Disable LLM-based cross-checking (default for template mode)",
     )
+    
+    # Other options
     parser.add_argument(
         "--max-agents",
         type=int,
@@ -835,13 +1195,35 @@ Examples:
     )
 
     args = parser.parse_args()
+    
+    # Parse domains and patterns
+    domains = None
+    if args.domains:
+        domains = [d.strip() for d in args.domains.split(",")]
+    
+    patterns = None
+    if args.patterns:
+        patterns = [p.strip() for p in args.patterns.split(",")]
+    
+    # Determine cross-checking default based on mode
+    use_crosscheck = args.crosscheck
+    if args.no_crosscheck:
+        use_crosscheck = False
+    
+    # Parse mode
+    mode = GenerationMode(args.mode)
 
     # Build configuration
     config = GenerationConfig(
         num_examples=args.num_examples,
+        mode=mode,
         paraphrases_per_template=args.paraphrases,
+        nl_temperature=args.nl_temp,
+        atl_temperature=args.atl_temp,
+        domains=domains,
+        patterns=patterns,
         use_llm_paraphrasing=not args.no_paraphrase,
-        use_cross_checking=not args.no_crosscheck,
+        use_cross_checking=use_crosscheck,
         verification_provider=args.verification_provider,
         llm_provider=args.provider,
         max_agents=args.max_agents,
@@ -857,11 +1239,13 @@ Examples:
         pairs = generator.generate()
     except ValueError as e:
         # Handle missing API key gracefully
-        if "API key" in str(e) and (
-            config.use_llm_paraphrasing or config.use_cross_checking
-        ):
+        if "API key" in str(e):
+            if mode == GenerationMode.TEMPLATE:
+                # Template mode shouldn't need API
+                raise
             print(f"Warning: {e}")
             print("Falling back to template-only generation...")
+            config.mode = GenerationMode.TEMPLATE
             config.use_llm_paraphrasing = False
             config.use_cross_checking = False
             generator = DatasetGenerator(config)
@@ -875,6 +1259,14 @@ Examples:
 
     print(f"\n✓ Generated {len(pairs)} NL-ATL pairs")
     print(f"✓ Saved to: {output_path}")
+    
+    # Print summary statistics
+    if args.verbose:
+        domains_used = set(p.domain for p in pairs if p.domain)
+        templates_used = set(p.template_id for p in pairs if p.template_id)
+        print(f"\nSummary:")
+        print(f"  Domains: {len(domains_used)} ({', '.join(list(domains_used)[:5])}{'...' if len(domains_used) > 5 else ''})")
+        print(f"  Templates: {len(templates_used)}")
 
 
 # Allow running as module

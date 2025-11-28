@@ -1,120 +1,479 @@
 {
-  "version": "1.0",
-  "description": "Seed ATL templates with corresponding NL templates for dataset generation",
+  "version": "2.0",
+  "description": "Extended ATL templates with NL variations for high-quality dataset generation",
+  
   "templates": [
     {
-      "id": "safety_basic",
+      "id": "safety_never",
       "category": "safety",
       "atl_template": "⟨⟨{coalition}⟩⟩ G ¬{p}",
-      "nl_template": "The coalition {coalition_nl} can ensure that {p_nl} never happens.",
-      "description": "Agents ensure something bad never happens"
+      "nl_templates": [
+        "The coalition {coalition_nl} can ensure that {p_nl} never happens.",
+        "{coalition_nl} has a strategy to always prevent {p_nl}.",
+        "{coalition_nl} can guarantee {p_nl} will never occur.",
+        "It is within {coalition_nl}'s power to make sure {p_nl} is always avoided.",
+        "{coalition_nl} can always keep {p_nl} from happening.",
+        "No matter what, {coalition_nl} can prevent {p_nl}.",
+        "{coalition_nl} is capable of ensuring {p_nl} never becomes true.",
+        "There exists a strategy for {coalition_nl} to permanently avoid {p_nl}."
+      ],
+      "description": "Agents ensure something bad never happens (safety invariant)"
     },
     {
       "id": "safety_always",
       "category": "safety",
       "atl_template": "⟨⟨{coalition}⟩⟩ G {p}",
-      "nl_template": "The coalition {coalition_nl} can guarantee that {p_nl} always holds.",
-      "description": "Agents maintain an invariant"
+      "nl_templates": [
+        "The coalition {coalition_nl} can guarantee that {p_nl} always holds.",
+        "{coalition_nl} has a strategy to maintain {p_nl} at all times.",
+        "{coalition_nl} can ensure {p_nl} is always true.",
+        "{coalition_nl} can keep {p_nl} true forever.",
+        "It is possible for {coalition_nl} to always satisfy {p_nl}.",
+        "{coalition_nl} has the ability to make {p_nl} hold continuously.",
+        "There is a way for {coalition_nl} to guarantee {p_nl} at every moment.",
+        "{coalition_nl} can enforce that {p_nl} remains true indefinitely."
+      ],
+      "description": "Agents maintain an invariant property"
     },
     {
-      "id": "reachability_basic",
+      "id": "reachability_eventually",
       "category": "reachability",
       "atl_template": "⟨⟨{coalition}⟩⟩ F {p}",
-      "nl_template": "The coalition {coalition_nl} can eventually make {p_nl} happen.",
+      "nl_templates": [
+        "The coalition {coalition_nl} can eventually make {p_nl} happen.",
+        "{coalition_nl} has a strategy to eventually achieve {p_nl}.",
+        "{coalition_nl} can reach a state where {p_nl}.",
+        "It is within {coalition_nl}'s power to eventually bring about {p_nl}.",
+        "Sooner or later, {coalition_nl} can make {p_nl} true.",
+        "{coalition_nl} can guarantee {p_nl} will eventually become true.",
+        "There exists a strategy for {coalition_nl} to eventually ensure {p_nl}.",
+        "{coalition_nl} is capable of eventually achieving {p_nl}."
+      ],
       "description": "Agents can eventually achieve a goal"
     },
     {
       "id": "reachability_next",
       "category": "reachability",
       "atl_template": "⟨⟨{coalition}⟩⟩ X {p}",
-      "nl_template": "The coalition {coalition_nl} can make {p_nl} happen in the next step.",
-      "description": "Agents achieve something immediately"
+      "nl_templates": [
+        "The coalition {coalition_nl} can make {p_nl} happen in the next step.",
+        "{coalition_nl} has a strategy to ensure {p_nl} in the next moment.",
+        "In one step, {coalition_nl} can achieve {p_nl}.",
+        "{coalition_nl} can immediately bring about {p_nl}.",
+        "{coalition_nl} has an action that makes {p_nl} true next.",
+        "With one move, {coalition_nl} can ensure {p_nl}.",
+        "{coalition_nl} can guarantee {p_nl} will hold in the very next state.",
+        "The next state can have {p_nl} if {coalition_nl} chooses correctly."
+      ],
+      "description": "Agents achieve something in the next step"
     },
     {
       "id": "until_basic",
       "category": "until",
       "atl_template": "⟨⟨{coalition}⟩⟩ ({p} U {q})",
-      "nl_template": "The coalition {coalition_nl} can ensure {p_nl} holds until {q_nl} becomes true.",
-      "description": "Agents maintain a condition until another is achieved"
+      "nl_templates": [
+        "The coalition {coalition_nl} can ensure {p_nl} holds until {q_nl} becomes true.",
+        "{coalition_nl} has a strategy to maintain {p_nl} until {q_nl}.",
+        "{coalition_nl} can keep {p_nl} true until eventually {q_nl}.",
+        "It is within {coalition_nl}'s power to sustain {p_nl} until {q_nl} is achieved.",
+        "{coalition_nl} can guarantee {p_nl} continues to hold until {q_nl} happens.",
+        "{coalition_nl} is capable of preserving {p_nl} until {q_nl} occurs.",
+        "Until {q_nl} is reached, {coalition_nl} can maintain {p_nl}.",
+        "{coalition_nl} can ensure {p_nl} remains true until the moment {q_nl} becomes true."
+      ],
+      "description": "Agents maintain one condition until another is achieved"
     },
     {
-      "id": "response_basic",
+      "id": "response_eventually",
       "category": "response",
       "atl_template": "⟨⟨{coalition}⟩⟩ G ({p} → F {q})",
-      "nl_template": "The coalition {coalition_nl} can guarantee that whenever {p_nl}, eventually {q_nl}.",
+      "nl_templates": [
+        "The coalition {coalition_nl} can guarantee that whenever {p_nl}, eventually {q_nl}.",
+        "{coalition_nl} has a strategy such that every time {p_nl}, {q_nl} follows eventually.",
+        "{coalition_nl} can ensure that {p_nl} always leads to {q_nl} eventually.",
+        "Whenever {p_nl}, {coalition_nl} can make sure {q_nl} eventually happens.",
+        "{coalition_nl} can enforce that every occurrence of {p_nl} is followed by {q_nl}.",
+        "If {p_nl} ever occurs, {coalition_nl} can guarantee {q_nl} will eventually follow.",
+        "{coalition_nl} is capable of responding to every {p_nl} with eventual {q_nl}.",
+        "{coalition_nl} can ensure that {p_nl} always triggers {q_nl} at some point."
+      ],
       "description": "Response pattern - trigger leads to eventual response"
     },
     {
-      "id": "response_next",
+      "id": "response_immediate",
       "category": "response",
       "atl_template": "⟨⟨{coalition}⟩⟩ G ({p} → X {q})",
-      "nl_template": "The coalition {coalition_nl} can ensure that whenever {p_nl}, then {q_nl} in the next step.",
+      "nl_templates": [
+        "The coalition {coalition_nl} can ensure that whenever {p_nl}, then {q_nl} in the next step.",
+        "{coalition_nl} has a strategy to immediately respond to {p_nl} with {q_nl}.",
+        "{coalition_nl} can guarantee that {p_nl} is always immediately followed by {q_nl}.",
+        "Whenever {p_nl}, {coalition_nl} can ensure {q_nl} happens right after.",
+        "{coalition_nl} can make sure every {p_nl} triggers {q_nl} in the next moment.",
+        "If {p_nl} happens, {coalition_nl} can guarantee {q_nl} in the very next step.",
+        "{coalition_nl} is capable of immediately responding to {p_nl} with {q_nl}.",
+        "{coalition_nl} can enforce instant {q_nl} whenever {p_nl} occurs."
+      ],
       "description": "Immediate response pattern"
     },
     {
-      "id": "avoidance",
+      "id": "mutual_exclusion",
       "category": "safety",
       "atl_template": "⟨⟨{coalition}⟩⟩ G (¬{p} ∨ ¬{q})",
-      "nl_template": "The coalition {coalition_nl} can always prevent {p_nl} and {q_nl} from being true simultaneously.",
+      "nl_templates": [
+        "The coalition {coalition_nl} can always prevent {p_nl} and {q_nl} from being true simultaneously.",
+        "{coalition_nl} has a strategy to ensure {p_nl} and {q_nl} are never both true.",
+        "{coalition_nl} can guarantee mutual exclusion between {p_nl} and {q_nl}.",
+        "It is within {coalition_nl}'s power to keep {p_nl} and {q_nl} from occurring together.",
+        "{coalition_nl} can make sure at most one of {p_nl} or {q_nl} holds at any time.",
+        "{coalition_nl} can enforce that {p_nl} and {q_nl} are mutually exclusive.",
+        "{coalition_nl} is capable of preventing simultaneous {p_nl} and {q_nl}.",
+        "{coalition_nl} can ensure {p_nl} and {q_nl} never coincide."
+      ],
       "description": "Mutual exclusion / avoidance pattern"
     },
     {
       "id": "conditional_reachability",
       "category": "reachability",
       "atl_template": "⟨⟨{coalition}⟩⟩ ({p} → F {q})",
-      "nl_template": "If {p_nl}, then the coalition {coalition_nl} can eventually achieve {q_nl}.",
+      "nl_templates": [
+        "If {p_nl}, then the coalition {coalition_nl} can eventually achieve {q_nl}.",
+        "Given {p_nl}, {coalition_nl} has a strategy to eventually reach {q_nl}.",
+        "When {p_nl} holds, {coalition_nl} can bring about {q_nl} eventually.",
+        "Assuming {p_nl}, {coalition_nl} is capable of eventually achieving {q_nl}.",
+        "Starting from {p_nl}, {coalition_nl} can guarantee eventual {q_nl}.",
+        "If {p_nl} is true, {coalition_nl} can eventually make {q_nl} true.",
+        "Under the condition that {p_nl}, {coalition_nl} can eventually ensure {q_nl}.",
+        "Provided {p_nl}, {coalition_nl} has the power to eventually achieve {q_nl}."
+      ],
       "description": "Conditional reachability"
     },
     {
       "id": "stability",
       "category": "safety",
       "atl_template": "⟨⟨{coalition}⟩⟩ (F {p} → G {p})",
-      "nl_template": "Once the coalition {coalition_nl} achieves {p_nl}, they can maintain it forever.",
+      "nl_templates": [
+        "Once the coalition {coalition_nl} achieves {p_nl}, they can maintain it forever.",
+        "{coalition_nl} can make {p_nl} stable once achieved.",
+        "If {coalition_nl} ever reaches {p_nl}, they can keep it true permanently.",
+        "{coalition_nl} has a strategy to make {p_nl} persistent once it becomes true.",
+        "{coalition_nl} can ensure that once {p_nl} holds, it holds forever.",
+        "After {p_nl} is achieved, {coalition_nl} can guarantee it stays true.",
+        "{coalition_nl} is capable of stabilizing {p_nl} once it occurs.",
+        "When {p_nl} becomes true, {coalition_nl} can lock it in permanently."
+      ],
       "description": "Stability - once achieved, stays achieved"
+    },
+    {
+      "id": "eventual_stability",
+      "category": "liveness",
+      "atl_template": "⟨⟨{coalition}⟩⟩ F G {p}",
+      "nl_templates": [
+        "The coalition {coalition_nl} can eventually make {p_nl} true and keep it true forever.",
+        "{coalition_nl} has a strategy to eventually stabilize on {p_nl}.",
+        "{coalition_nl} can reach a point where {p_nl} holds permanently.",
+        "Eventually, {coalition_nl} can make {p_nl} true and maintain it indefinitely.",
+        "{coalition_nl} is capable of eventually achieving permanent {p_nl}.",
+        "{coalition_nl} can guarantee eventual and permanent {p_nl}.",
+        "There is a strategy for {coalition_nl} to eventually reach and maintain {p_nl}.",
+        "{coalition_nl} can eventually enter a state where {p_nl} always holds."
+      ],
+      "description": "Eventually reach and maintain a property"
+    },
+    {
+      "id": "repeated_reachability",
+      "category": "liveness",
+      "atl_template": "⟨⟨{coalition}⟩⟩ G F {p}",
+      "nl_templates": [
+        "The coalition {coalition_nl} can ensure {p_nl} happens infinitely often.",
+        "{coalition_nl} has a strategy to keep achieving {p_nl} repeatedly.",
+        "{coalition_nl} can guarantee {p_nl} occurs again and again forever.",
+        "Infinitely often, {coalition_nl} can make {p_nl} true.",
+        "{coalition_nl} can ensure {p_nl} is achieved repeatedly without bound.",
+        "{coalition_nl} is capable of making {p_nl} recur indefinitely.",
+        "{coalition_nl} can keep bringing about {p_nl} over and over.",
+        "{coalition_nl} can guarantee {p_nl} will always eventually happen again."
+      ],
+      "description": "Repeated/infinite reachability (liveness)"
+    },
+    {
+      "id": "precedence",
+      "category": "ordering",
+      "atl_template": "⟨⟨{coalition}⟩⟩ (¬{q} U {p})",
+      "nl_templates": [
+        "The coalition {coalition_nl} can ensure {p_nl} happens before {q_nl}.",
+        "{coalition_nl} has a strategy to achieve {p_nl} prior to {q_nl}.",
+        "{coalition_nl} can make sure {q_nl} doesn't happen until {p_nl} does.",
+        "{coalition_nl} can guarantee {p_nl} precedes {q_nl}.",
+        "{coalition_nl} can prevent {q_nl} until after {p_nl} occurs.",
+        "Before {q_nl} can happen, {coalition_nl} can ensure {p_nl} happens first.",
+        "{coalition_nl} is capable of establishing {p_nl} before {q_nl}.",
+        "{coalition_nl} can enforce that {p_nl} comes before {q_nl}."
+      ],
+      "description": "Precedence - one event before another"
+    },
+    {
+      "id": "absence_after",
+      "category": "safety",
+      "atl_template": "⟨⟨{coalition}⟩⟩ G ({p} → G ¬{q})",
+      "nl_templates": [
+        "The coalition {coalition_nl} can ensure that once {p_nl}, {q_nl} never happens again.",
+        "{coalition_nl} has a strategy to permanently prevent {q_nl} after {p_nl}.",
+        "After {p_nl} occurs, {coalition_nl} can guarantee {q_nl} is always avoided.",
+        "{coalition_nl} can make sure {q_nl} is impossible once {p_nl} has happened.",
+        "Once {p_nl} happens, {coalition_nl} can keep {q_nl} from ever occurring.",
+        "{coalition_nl} can enforce permanent absence of {q_nl} after {p_nl}.",
+        "Following {p_nl}, {coalition_nl} is capable of always preventing {q_nl}.",
+        "{coalition_nl} can guarantee that {p_nl} permanently blocks {q_nl}."
+      ],
+      "description": "After one event, another never happens"
+    },
+    {
+      "id": "existence_after",
+      "category": "liveness",
+      "atl_template": "⟨⟨{coalition}⟩⟩ G ({p} → F {q})",
+      "nl_templates": [
+        "The coalition {coalition_nl} can ensure that every {p_nl} is eventually followed by {q_nl}.",
+        "{coalition_nl} has a strategy to make {q_nl} happen after every {p_nl}.",
+        "Whenever {p_nl} occurs, {coalition_nl} can eventually bring about {q_nl}.",
+        "{coalition_nl} can guarantee that {p_nl} is always eventually answered by {q_nl}.",
+        "Each time {p_nl} happens, {coalition_nl} can make sure {q_nl} follows.",
+        "{coalition_nl} is capable of responding to every {p_nl} with eventual {q_nl}.",
+        "After {p_nl}, {coalition_nl} can always eventually achieve {q_nl}.",
+        "{coalition_nl} can ensure {q_nl} eventually occurs whenever {p_nl} does."
+      ],
+      "description": "After one event, another eventually happens"
+    },
+    {
+      "id": "bounded_until",
+      "category": "bounded",
+      "atl_template": "⟨⟨{coalition}⟩⟩ ({p} U ({q} ∧ {r}))",
+      "nl_templates": [
+        "The coalition {coalition_nl} can maintain {p_nl} until both {q_nl} and {r_nl} are achieved.",
+        "{coalition_nl} has a strategy to keep {p_nl} true until {q_nl} and {r_nl} both hold.",
+        "{coalition_nl} can preserve {p_nl} until the moment {q_nl} and {r_nl} are simultaneously true.",
+        "{coalition_nl} can sustain {p_nl} until {q_nl} and {r_nl} occur together.",
+        "Until {q_nl} and {r_nl} are both true, {coalition_nl} can maintain {p_nl}.",
+        "{coalition_nl} can guarantee {p_nl} holds until {q_nl} and {r_nl} are jointly achieved.",
+        "{coalition_nl} is capable of keeping {p_nl} until both {q_nl} and {r_nl} happen.",
+        "{coalition_nl} can ensure {p_nl} continues until {q_nl} and {r_nl} are reached together."
+      ],
+      "description": "Maintain until conjunction is achieved"
+    },
+    {
+      "id": "disjunctive_goal",
+      "category": "reachability",
+      "atl_template": "⟨⟨{coalition}⟩⟩ F ({p} ∨ {q})",
+      "nl_templates": [
+        "The coalition {coalition_nl} can eventually achieve either {p_nl} or {q_nl}.",
+        "{coalition_nl} has a strategy to reach at least one of {p_nl} or {q_nl}.",
+        "{coalition_nl} can guarantee that eventually either {p_nl} or {q_nl} becomes true.",
+        "At least one of {p_nl} or {q_nl} can be achieved eventually by {coalition_nl}.",
+        "{coalition_nl} can ensure {p_nl} or {q_nl} happens at some point.",
+        "{coalition_nl} is capable of eventually making {p_nl} or {q_nl} true.",
+        "Either {p_nl} or {q_nl} can eventually be brought about by {coalition_nl}.",
+        "{coalition_nl} can guarantee eventual success of either {p_nl} or {q_nl}."
+      ],
+      "description": "Eventually achieve one of multiple goals"
+    },
+    {
+      "id": "conjunctive_goal",
+      "category": "reachability",
+      "atl_template": "⟨⟨{coalition}⟩⟩ F ({p} ∧ {q})",
+      "nl_templates": [
+        "The coalition {coalition_nl} can eventually achieve both {p_nl} and {q_nl} simultaneously.",
+        "{coalition_nl} has a strategy to reach a state where both {p_nl} and {q_nl} hold.",
+        "{coalition_nl} can guarantee that eventually both {p_nl} and {q_nl} are true.",
+        "{coalition_nl} can eventually bring about both {p_nl} and {q_nl} at the same time.",
+        "{coalition_nl} is capable of eventually achieving {p_nl} and {q_nl} together.",
+        "Both {p_nl} and {q_nl} can eventually be made true by {coalition_nl}.",
+        "{coalition_nl} can ensure {p_nl} and {q_nl} eventually hold simultaneously.",
+        "{coalition_nl} can reach a point where {p_nl} and {q_nl} are jointly satisfied."
+      ],
+      "description": "Eventually achieve multiple goals together"
+    },
+    {
+      "id": "nested_eventually",
+      "category": "nested",
+      "atl_template": "⟨⟨{coalition}⟩⟩ F ({p} ∧ F {q})",
+      "nl_templates": [
+        "The coalition {coalition_nl} can eventually achieve {p_nl} and afterward still achieve {q_nl}.",
+        "{coalition_nl} has a strategy to reach {p_nl} and then eventually {q_nl}.",
+        "{coalition_nl} can first make {p_nl} true and then later make {q_nl} true.",
+        "{coalition_nl} can achieve {p_nl} eventually, and from there still reach {q_nl}.",
+        "{coalition_nl} is capable of sequentially achieving {p_nl} then {q_nl}.",
+        "Eventually {p_nl} can be reached by {coalition_nl}, with {q_nl} following later.",
+        "{coalition_nl} can guarantee {p_nl} happens and {q_nl} happens subsequently.",
+        "{coalition_nl} can ensure {p_nl} is achieved first, followed eventually by {q_nl}."
+      ],
+      "description": "Nested eventually - achieve one thing then another"
+    },
+    {
+      "id": "conditional_maintenance",
+      "category": "safety",
+      "atl_template": "⟨⟨{coalition}⟩⟩ G ({p} → {q})",
+      "nl_templates": [
+        "The coalition {coalition_nl} can ensure that whenever {p_nl}, {q_nl} also holds.",
+        "{coalition_nl} has a strategy to maintain the invariant: if {p_nl} then {q_nl}.",
+        "{coalition_nl} can guarantee that {p_nl} always implies {q_nl}.",
+        "At all times, {coalition_nl} can ensure {p_nl} is accompanied by {q_nl}.",
+        "{coalition_nl} can enforce that {p_nl} is never true without {q_nl}.",
+        "Whenever {p_nl} holds, {coalition_nl} can make sure {q_nl} holds too.",
+        "{coalition_nl} is capable of maintaining {q_nl} whenever {p_nl} is true.",
+        "{coalition_nl} can guarantee the implication from {p_nl} to {q_nl} always holds."
+      ],
+      "description": "Maintain an implication invariant"
     }
   ],
+
   "few_shot_examples": [
-    {
-      "nl": "Agents 1 and 2 can ensure the system never crashes.",
-      "atl": "⟨⟨1,2⟩⟩ G ¬crash"
-    },
-    {
-      "nl": "The robot can eventually reach the goal location.",
-      "atl": "⟨⟨robot⟩⟩ F goal_reached"
-    },
-    {
-      "nl": "The controller can keep the temperature stable until the alarm is triggered.",
-      "atl": "⟨⟨controller⟩⟩ (temp_stable U alarm)"
-    },
-    {
-      "nl": "Whenever a request is made, the server team can eventually respond.",
-      "atl": "⟨⟨server_team⟩⟩ G (request → F response)"
-    },
-    {
-      "nl": "The driver can make the car stop in the next moment.",
-      "atl": "⟨⟨driver⟩⟩ X car_stopped"
-    }
+    {"nl": "Agents 1 and 2 can ensure the system never crashes.", "atl": "⟨⟨1,2⟩⟩ G ¬crash"},
+    {"nl": "The robot can eventually reach the goal location.", "atl": "⟨⟨robot⟩⟩ F goal_reached"},
+    {"nl": "The controller can keep the temperature stable until the alarm is triggered.", "atl": "⟨⟨controller⟩⟩ (temp_stable U alarm)"},
+    {"nl": "Whenever a request is made, the server team can eventually respond.", "atl": "⟨⟨server_team⟩⟩ G (request → F response)"},
+    {"nl": "The driver can make the car stop in the next moment.", "atl": "⟨⟨driver⟩⟩ X car_stopped"},
+    {"nl": "The safety monitor must guarantee that no unsafe state is ever reached.", "atl": "⟨⟨SafetyMonitor⟩⟩ G ¬unsafe_state"},
+    {"nl": "The scheduler must guarantee that queued tasks eventually execute.", "atl": "⟨⟨Scheduler⟩⟩ G (task_in_queue → F executed)"},
+    {"nl": "A user must not access a resource until authentication succeeds.", "atl": "⟨⟨system⟩⟩ G (¬authentication → ¬access)"},
+    {"nl": "The drone controller must always prevent collisions.", "atl": "⟨⟨DroneController⟩⟩ G ¬collision"},
+    {"nl": "Once the braking system engages, the vehicle can guarantee it will eventually stop.", "atl": "⟨⟨BrakingSystem⟩⟩ G (braking → F stopped)"}
   ],
-  "atom_phrases": {
-    "crash": "the system crashes",
-    "error": "an error occurs",
-    "safe": "the system is safe",
-    "goal_reached": "the goal is reached",
-    "request": "a request is made",
-    "response": "a response is given",
-    "alarm": "the alarm is triggered",
-    "temp_stable": "the temperature is stable",
-    "power_on": "the power is on",
-    "connected": "the connection is established",
-    "authenticated": "the user is authenticated",
-    "completed": "the task is completed",
-    "waiting": "the system is waiting",
-    "active": "the process is active",
-    "idle": "the system is idle"
+
+  "domains": {
+    "autonomous_systems": {
+      "agents": ["DroneController", "Autopilot", "NavigationModule", "VisionSystem", "PlanningUnit", "SensorFusion"],
+      "atoms": {
+        "collision": "a collision occurs",
+        "deviation": "a deviation is detected",
+        "corrected": "the deviation is corrected",
+        "obstacle_detected": "an obstacle is detected",
+        "path_clear": "the path is clear",
+        "waypoint_reached": "the waypoint is reached",
+        "landing_complete": "landing is complete",
+        "takeoff_complete": "takeoff is complete",
+        "hovering": "the drone is hovering",
+        "altitude_safe": "the altitude is safe",
+        "battery_low": "the battery is low",
+        "return_home": "return to home is initiated"
+      }
+    },
+    "distributed_systems": {
+      "agents": ["Leader", "Follower", "ReplicaNodes", "ConsensusGroup", "ClusterManager", "Scheduler", "Orchestrator", "LoadBalancer"],
+      "atoms": {
+        "consensus": "consensus is reached",
+        "consistency": "consistency is maintained",
+        "replicated": "data is replicated",
+        "leader_elected": "a leader is elected",
+        "quorum": "quorum is achieved",
+        "partitioned": "a network partition occurs",
+        "recovered": "recovery is complete",
+        "synchronized": "nodes are synchronized",
+        "overloaded": "the system is overloaded",
+        "balanced": "load is balanced",
+        "heartbeat": "a heartbeat is received",
+        "timeout": "a timeout occurs"
+      }
+    },
+    "safety_critical": {
+      "agents": ["SafetyMonitor", "HazardDetector", "EmergencyController", "FailsafeModule", "WatchdogTimer"],
+      "atoms": {
+        "unsafe_state": "an unsafe state is reached",
+        "hazard_detected": "a hazard is detected",
+        "emergency_stop": "an emergency stop is triggered",
+        "failsafe_active": "the failsafe is active",
+        "alarm_triggered": "the alarm is triggered",
+        "warning_issued": "a warning is issued",
+        "shutdown_complete": "shutdown is complete",
+        "safe_state": "a safe state is reached",
+        "error_detected": "an error is detected",
+        "recovery_initiated": "recovery is initiated"
+      }
+    },
+    "robotics": {
+      "agents": ["RobotArm", "Gripper", "MotionPlanner", "ForceController", "JointController", "EndEffector"],
+      "atoms": {
+        "object_grasped": "the object is grasped",
+        "position_reached": "the target position is reached",
+        "gripper_open": "the gripper is open",
+        "gripper_closed": "the gripper is closed",
+        "torque_limit": "the torque limit is exceeded",
+        "path_executed": "the path is executed",
+        "calibrated": "the robot is calibrated",
+        "home_position": "the home position is reached",
+        "collision_risk": "a collision risk is detected",
+        "workspace_valid": "the position is in valid workspace"
+      }
+    },
+    "access_control": {
+      "agents": ["AuthSystem", "AccessController", "IdentityManager", "SessionManager", "PermissionValidator"],
+      "atoms": {
+        "authenticated": "the user is authenticated",
+        "authorized": "the user is authorized",
+        "session_valid": "the session is valid",
+        "token_expired": "the token has expired",
+        "access_granted": "access is granted",
+        "access_denied": "access is denied",
+        "login_successful": "login is successful",
+        "logout_complete": "logout is complete",
+        "permission_revoked": "permission is revoked",
+        "privilege_escalated": "privilege is escalated"
+      }
+    },
+    "industrial_control": {
+      "agents": ["CoolingSystem", "PowerController", "TemperatureRegulator", "PressureController", "ValveController", "PumpController"],
+      "atoms": {
+        "temp_within_limits": "temperature is within limits",
+        "pressure_stable": "pressure is stable",
+        "power_on": "power is on",
+        "power_off": "power is off",
+        "valve_open": "the valve is open",
+        "valve_closed": "the valve is closed",
+        "pump_running": "the pump is running",
+        "overheat": "overheating occurs",
+        "cooldown_complete": "cooldown is complete",
+        "maintenance_mode": "maintenance mode is active"
+      }
+    },
+    "networking": {
+      "agents": ["FirewallController", "ConnectionManager", "PacketRouter", "LoadBalancer", "DNSResolver"],
+      "atoms": {
+        "connection_established": "the connection is established",
+        "connection_closed": "the connection is closed",
+        "packet_delivered": "the packet is delivered",
+        "packet_dropped": "the packet is dropped",
+        "route_found": "a route is found",
+        "timeout_occurred": "a timeout occurred",
+        "handshake_complete": "the handshake is complete",
+        "encrypted": "the connection is encrypted",
+        "bandwidth_available": "bandwidth is available",
+        "congestion": "network congestion occurs"
+      }
+    },
+    "transaction_processing": {
+      "agents": ["TransactionManager", "CommitController", "RollbackHandler", "LockManager", "IsolationManager"],
+      "atoms": {
+        "transaction_committed": "the transaction is committed",
+        "transaction_aborted": "the transaction is aborted",
+        "lock_acquired": "the lock is acquired",
+        "lock_released": "the lock is released",
+        "rollback_complete": "rollback is complete",
+        "deadlock_detected": "a deadlock is detected",
+        "isolation_maintained": "isolation is maintained",
+        "consistency_checked": "consistency is checked",
+        "durability_ensured": "durability is ensured",
+        "checkpoint_created": "a checkpoint is created"
+      }
+    }
   },
+
+  "nl_generation_prompts": {
+    "creative": "Generate a diverse, natural-sounding requirement that would translate to an ATL formula. Be creative with phrasing, use varied sentence structures, and include realistic domain context. The requirement should express what some agent(s) can guarantee or achieve.",
+    "domain_specific": "Generate a natural language requirement in the {domain} domain that expresses a temporal property. Include realistic agent names and propositions typical of this domain.",
+    "pattern_based": "Generate a natural language requirement that expresses a {pattern} pattern (e.g., 'safety' for always avoiding something, 'liveness' for eventually achieving something, 'response' for if-then-eventually relationships)."
+  },
+
   "coalition_phrases": {
     "1": "agent 1",
-    "2": "agent 2",
+    "2": "agent 2", 
     "3": "agent 3",
     "1,2": "agents 1 and 2",
     "1,3": "agents 1 and 3",
@@ -123,6 +482,30 @@
     "robot": "the robot",
     "controller": "the controller",
     "server_team": "the server team",
-    "driver": "the driver"
-  }
+    "driver": "the driver",
+    "system": "the system"
+  },
+
+  "sentence_starters": [
+    "The coalition",
+    "It is within the power of",
+    "There exists a strategy for",
+    "The agents",
+    "",
+    "Working together,",
+    "By coordinating,",
+    "The group",
+    "If they cooperate,"
+  ],
+
+  "modal_verbs": [
+    "can ensure",
+    "can guarantee", 
+    "is able to ensure",
+    "has the ability to",
+    "is capable of ensuring",
+    "can make sure",
+    "has a strategy to",
+    "can enforce"
+  ]
 }
