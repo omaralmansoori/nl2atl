@@ -1,10 +1,48 @@
 """
 NL2ATL Translation Module
+=========================
 
-Provides prompting and LLM-based translation from Natural Language to ATL formulas:
-- Prompt building with few-shot examples
-- Provider-agnostic LLM client abstraction
-- Translation and cross-checking functions
+Provides LLM-based translation from Natural Language to ATL formulas.
+
+This module implements:
+1. Prompt building with configurable few-shot examples
+2. Provider-agnostic LLM client abstraction (OpenAI, Azure, mock)
+3. Core translation functions with validation
+4. Cross-checking and critique functions
+
+Architecture Overview
+---------------------
+```
+NL Text → build_translation_prompt() → LLM → extract_atl_from_response() → validate → ATL
+                     ↓
+            critique_nl_atl_pair() → quality assessment
+```
+
+For AI Integration
+------------------
+Key functions for pipeline integration:
+- `translate_nl_to_atl()`: Main translation entry point
+- `critique_nl_atl_pair()`: Quality assessment of NL-ATL pairs
+- `paraphrase_nl()`: Generate NL variations for data augmentation
+- `get_llm_client()`: Factory for LLM client instances
+
+Example Usage
+-------------
+>>> from nl2atl import translate_nl_to_atl, critique_nl_atl_pair
+>>> 
+>>> # Translate NL to ATL
+>>> formulas = translate_nl_to_atl("Agents 1 and 2 can ensure the system never crashes")
+>>> print(formulas)  # ['⟨⟨1,2⟩⟩ G ¬crash']
+>>>
+>>> # Critique a translation
+>>> result = critique_nl_atl_pair("The robot can reach the goal", "⟨⟨robot⟩⟩ F goal")
+>>> print(result["ok"])  # True
+
+Environment Variables
+---------------------
+- OPENAI_API_KEY: Required for OpenAI provider
+- AZURE_OPENAI_API_KEY: Required for Azure provider
+- AZURE_OPENAI_ENDPOINT: Required for Azure provider
 """
 
 from __future__ import annotations
@@ -15,9 +53,10 @@ import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
+from typing import Any, Dict, List, Optional, Union
 
 from atl_syntax import is_valid, parse_atl, validate_atl_string
+
 
 # =============================================================================
 # Configuration Loading
@@ -27,7 +66,13 @@ CONFIG_DIR = Path(__file__).parent / "config"
 
 
 def load_templates_config() -> dict:
-    """Load templates and few-shot examples from config file."""
+    """
+    Load templates and few-shot examples from config file.
+    
+    Returns:
+        Dictionary with 'templates', 'few_shot_examples', 'atom_phrases', etc.
+        Returns defaults if config file not found.
+    """
     config_path = CONFIG_DIR / "templates_atl.json"
     if config_path.exists():
         with open(config_path, "r", encoding="utf-8") as f:
@@ -36,17 +81,21 @@ def load_templates_config() -> dict:
 
 
 def load_fragment_config() -> dict:
-    """Load ATL fragment configuration from YAML file."""
+    """
+    Load ATL fragment configuration from YAML file.
+    
+    Returns:
+        Dictionary with temporal operators, constraints, etc.
+        Returns defaults if config file not found.
+    """
     config_path = CONFIG_DIR / "atl_fragment.yaml"
     if config_path.exists():
         try:
             import yaml
-
             with open(config_path, "r", encoding="utf-8") as f:
                 return yaml.safe_load(f)
         except ImportError:
-            # If PyYAML not available, return defaults
-            pass
+            pass  # YAML not available, return defaults
     return {
         "temporal_operators": ["X", "F", "G", "U"],
         "boolean_connectives": ["∧", "∨", "¬", "→"],
@@ -55,7 +104,7 @@ def load_fragment_config() -> dict:
 
 
 # =============================================================================
-# Prompt Building
+# ATL Syntax Reference for Prompts
 # =============================================================================
 
 ATL_SYNTAX_DESCRIPTION = """
@@ -88,18 +137,31 @@ Examples of valid ATL formulas:
 """.strip()
 
 
+# =============================================================================
+# Prompt Building
+# =============================================================================
+
+
 def build_translation_prompt(
     nl_text: str,
-    few_shot_examples: Optional[list[dict]] = None,
+    few_shot_examples: Optional[List[Dict[str, str]]] = None,
     include_syntax_description: bool = True,
+    custom_instructions: Optional[str] = None,
 ) -> str:
     """
     Build a structured prompt for NL to ATL translation.
+    
+    This constructs a prompt that includes:
+    1. System instruction defining the task
+    2. ATL syntax reference (optional)
+    3. Few-shot examples
+    4. The actual NL text to translate
     
     Args:
         nl_text: The natural language requirement to translate
         few_shot_examples: List of {"nl": ..., "atl": ...} examples
         include_syntax_description: Whether to include ATL syntax reference
+        custom_instructions: Additional instructions to append
         
     Returns:
         A formatted prompt string for the LLM
@@ -128,6 +190,10 @@ def build_translation_prompt(
             parts.append(f"NL: {ex['nl']}")
             parts.append(f"ATL: {ex['atl']}\n")
 
+    # Custom instructions
+    if custom_instructions:
+        parts.append(f"\n{custom_instructions}\n")
+
     # The actual request
     parts.append(
         "\nNow translate the following requirement into a single ATL formula. "
@@ -142,6 +208,9 @@ def build_translation_prompt(
 def build_critique_prompt(nl_text: str, atl_text: str) -> str:
     """
     Build a prompt for critiquing an NL-ATL pair.
+    
+    The critique checks whether the ATL formula correctly captures
+    the natural language requirement.
     
     Args:
         nl_text: The natural language requirement
@@ -175,6 +244,41 @@ Respond with ONLY the JSON object, no other text."""
     return prompt
 
 
+def build_paraphrase_prompt(
+    nl_text: str,
+    num_paraphrases: int = 3,
+    preserve_entities: bool = True,
+) -> str:
+    """
+    Build a prompt for generating NL paraphrases.
+    
+    Args:
+        nl_text: The original NL text
+        num_paraphrases: Number of variations to generate
+        preserve_entities: Whether to preserve agent/proposition names
+        
+    Returns:
+        A formatted prompt for paraphrasing
+    """
+    constraint = ""
+    if preserve_entities:
+        constraint = (
+            "IMPORTANT: Keep all agent names, coalition references, and proposition "
+            "names exactly as they appear in the original. Only rephrase the "
+            "surrounding language."
+        )
+
+    return f"""Generate {num_paraphrases} different paraphrases of the following requirement.
+Each paraphrase should preserve the exact meaning, agents, and temporal relationships.
+
+{constraint}
+
+Original: {nl_text}
+
+Provide exactly {num_paraphrases} paraphrases, one per line, numbered 1-{num_paraphrases}.
+Do not include the original sentence in your response."""
+
+
 # =============================================================================
 # LLM Client Abstraction
 # =============================================================================
@@ -182,17 +286,29 @@ Respond with ONLY the JSON object, no other text."""
 
 @dataclass
 class LLMResponse:
-    """Response from an LLM call."""
-
+    """
+    Response from an LLM call.
+    
+    Attributes:
+        text: The generated text content
+        model: Model identifier used
+        provider: Provider name (openai, azure, mock)
+        usage: Token usage statistics
+        raw_response: Full response object (provider-specific)
+    """
     text: str
     model: str
     provider: str
-    usage: dict = field(default_factory=dict)
-    raw_response: Optional[dict] = None
+    usage: Dict[str, int] = field(default_factory=dict)
+    raw_response: Optional[Any] = None
 
 
 class LLMClient(ABC):
-    """Abstract base class for LLM clients."""
+    """
+    Abstract base class for LLM clients.
+    
+    Implement this interface to add support for new LLM providers.
+    """
 
     @abstractmethod
     def generate(
@@ -219,12 +335,16 @@ class LLMClient(ABC):
     @property
     @abstractmethod
     def provider_name(self) -> str:
-        """Return the provider name."""
+        """Return the provider name identifier."""
         pass
 
 
 class OpenAIClient(LLMClient):
-    """OpenAI API client implementation."""
+    """
+    OpenAI API client implementation.
+    
+    Supports both OpenAI direct API and compatible endpoints.
+    """
 
     def __init__(
         self,
@@ -237,13 +357,14 @@ class OpenAIClient(LLMClient):
         
         Args:
             api_key: API key (defaults to OPENAI_API_KEY env var)
-            model: Model to use
-            base_url: Optional custom base URL for API
+            model: Model to use (default: gpt-4o-mini)
+            base_url: Optional custom base URL for compatible APIs
         """
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
         if not self.api_key:
             raise ValueError(
-                "OpenAI API key required. Set OPENAI_API_KEY environment variable."
+                "OpenAI API key required. Set OPENAI_API_KEY environment variable "
+                "or pass api_key parameter."
             )
         self.model = model
         self.base_url = base_url
@@ -292,7 +413,9 @@ class OpenAIClient(LLMClient):
 
 
 class AzureOpenAIClient(LLMClient):
-    """Azure OpenAI API client implementation."""
+    """
+    Azure OpenAI API client implementation.
+    """
 
     def __init__(
         self,
@@ -369,17 +492,37 @@ class AzureOpenAIClient(LLMClient):
 
 
 class MockLLMClient(LLMClient):
-    """Mock LLM client for testing without API calls."""
+    """
+    Mock LLM client for testing without API calls.
+    
+    Returns predefined responses based on prompt type, or cycles through
+    custom responses if provided.
+    """
+    
+    # Default responses for different prompt types
+    CRITIQUE_RESPONSE = json.dumps({
+        "ok": True,
+        "issues": [],
+        "explanation": "The ATL formula correctly captures the natural language requirement.",
+        "suggested_fix": None
+    })
+    
+    TRANSLATION_RESPONSE = "⟨⟨1⟩⟩ G ¬error"
+    
+    PARAPHRASE_RESPONSE = """1. The system must always avoid errors.
+2. Errors should never occur in the system.
+3. The system guarantees no errors will happen."""
 
-    def __init__(self, responses: Optional[list[str]] = None):
+    def __init__(self, responses: Optional[List[str]] = None):
         """
         Initialize mock client.
         
         Args:
-            responses: List of responses to return in order
+            responses: List of responses to return in order (overrides auto-detection)
         """
-        self.responses = responses or ["⟨⟨1⟩⟩ G ¬error"]
+        self.responses = responses
         self._call_count = 0
+        self._call_history: List[str] = []
 
     def generate(
         self,
@@ -388,8 +531,21 @@ class MockLLMClient(LLMClient):
         temperature: float = 0.0,
         **kwargs,
     ) -> LLMResponse:
-        """Return a mock response."""
-        response = self.responses[self._call_count % len(self.responses)]
+        """Return a mock response based on prompt type."""
+        self._call_history.append(prompt)
+        
+        # If custom responses provided, use them
+        if self.responses:
+            response = self.responses[self._call_count % len(self.responses)]
+        # Otherwise, auto-detect prompt type
+        elif '"ok"' in prompt or "critique" in prompt.lower() or "check if" in prompt.lower():
+            response = self.CRITIQUE_RESPONSE
+        elif "paraphrase" in prompt.lower() or "rephrase" in prompt.lower():
+            response = self.PARAPHRASE_RESPONSE
+        else:
+            # Default: translation response
+            response = self.TRANSLATION_RESPONSE
+        
         self._call_count += 1
         return LLMResponse(
             text=response,
@@ -401,6 +557,11 @@ class MockLLMClient(LLMClient):
     @property
     def provider_name(self) -> str:
         return "mock"
+
+    @property
+    def call_history(self) -> List[str]:
+        """Get all prompts sent to this mock client."""
+        return self._call_history
 
 
 def get_llm_client(
@@ -416,6 +577,9 @@ def get_llm_client(
         
     Returns:
         An LLMClient instance
+        
+    Raises:
+        ValueError: If provider is unknown
     """
     providers = {
         "openai": OpenAIClient,
@@ -431,16 +595,16 @@ def get_llm_client(
 
 
 # =============================================================================
-# Core Translation Functions
+# Response Extraction
 # =============================================================================
 
 
-def extract_atl_from_response(response: str) -> list[str]:
+def extract_atl_from_response(response: str) -> List[str]:
     """
     Extract ATL formula candidates from an LLM response.
     
     The LLM might return extra text; this function extracts
-    plausible ATL formulas.
+    plausible ATL formulas using various heuristics.
     
     Args:
         response: Raw LLM response text
@@ -463,35 +627,53 @@ def extract_atl_from_response(response: str) -> list[str]:
     lines = text.split("\n")
     for line in lines:
         line = line.strip()
+        # Coalition patterns (Unicode or ASCII)
         if line.startswith("⟨⟨") or line.startswith("<<"):
             candidates.append(line)
-        elif line and not line.startswith(("#", "//", "NL:", "ATL:")):
-            # Could be a simple formula
-            if any(op in line for op in ["⟨⟨", "<<", "G ", "F ", "X ", " U "]):
+        # Check for temporal operators or negation with coalition
+        elif line and not line.startswith(("#", "//", "NL:", "ATL:", "-", "*")):
+            # Look for ATL-like content
+            if any(marker in line for marker in ["⟨⟨", "<<", "G ", "F ", "X ", " U "]):
                 candidates.append(line)
 
     # If no candidates found, try the whole response
     if not candidates and text:
         # Remove common prefixes
-        for prefix in ["ATL:", "Formula:", "Answer:"]:
-            if text.startswith(prefix):
-                text = text[len(prefix) :].strip()
+        for prefix in ["ATL:", "Formula:", "Answer:", "Output:", "Result:"]:
+            if text.lower().startswith(prefix.lower()):
+                text = text[len(prefix):].strip()
         candidates.append(text)
 
-    return candidates
+    # Clean up candidates
+    cleaned = []
+    for c in candidates:
+        # Remove trailing punctuation
+        c = c.rstrip(".,;:")
+        if c:
+            cleaned.append(c)
+
+    return cleaned
+
+
+# =============================================================================
+# Core Translation Functions
+# =============================================================================
 
 
 def translate_nl_to_atl(
     nl_text: str,
-    config: Optional[dict] = None,
+    config: Optional[Dict[str, Any]] = None,
     client: Optional[LLMClient] = None,
     validate: bool = True,
-) -> list[str]:
+) -> List[str]:
     """
     Translate a natural language requirement to ATL formula(s).
     
-    Builds the prompt, calls the LLM, extracts candidate ATL formulas,
-    and optionally validates them syntactically.
+    This is the main entry point for NL→ATL translation. It:
+    1. Builds a prompt with few-shot examples
+    2. Calls the LLM
+    3. Extracts candidate ATL formulas
+    4. Optionally validates them syntactically
     
     Args:
         nl_text: The natural language requirement
@@ -504,6 +686,11 @@ def translate_nl_to_atl(
         
     Returns:
         List of valid ATL formula strings (may be empty if all invalid)
+        
+    Example:
+        >>> formulas = translate_nl_to_atl("Agents 1 and 2 can ensure safety")
+        >>> print(formulas)
+        ['⟨⟨1,2⟩⟩ G safe']
     """
     config = config or {}
 
@@ -514,7 +701,12 @@ def translate_nl_to_atl(
 
     # Build prompt
     few_shot = config.get("few_shot_examples")
-    prompt = build_translation_prompt(nl_text, few_shot)
+    custom_instructions = config.get("custom_instructions")
+    prompt = build_translation_prompt(
+        nl_text, 
+        few_shot,
+        custom_instructions=custom_instructions
+    )
 
     # Call LLM
     max_tokens = config.get("max_tokens", 256)
@@ -547,11 +739,12 @@ def critique_nl_atl_pair(
     atl_text: str,
     client: Optional[LLMClient] = None,
     provider: str = "openai",
-) -> dict:
+) -> Dict[str, Any]:
     """
     Ask the LLM to critique an NL-ATL pair.
     
-    Checks whether the ATL formula correctly captures the NL requirement.
+    This function checks whether the ATL formula correctly captures
+    the natural language requirement.
     
     Args:
         nl_text: The natural language requirement
@@ -574,17 +767,17 @@ def critique_nl_atl_pair(
 
     # Parse JSON response
     try:
-        # Extract JSON from response
         text = response.text.strip()
+        
         # Handle markdown code blocks
         if "```json" in text:
-            text = re.search(r"```json\s*(.*?)\s*```", text, re.DOTALL)
-            if text:
-                text = text.group(1)
+            match = re.search(r"```json\s*(.*?)\s*```", text, re.DOTALL)
+            if match:
+                text = match.group(1)
         elif "```" in text:
-            text = re.search(r"```\s*(.*?)\s*```", text, re.DOTALL)
-            if text:
-                text = text.group(1)
+            match = re.search(r"```\s*(.*?)\s*```", text, re.DOTALL)
+            if match:
+                text = match.group(1)
 
         result = json.loads(text)
         return {
@@ -597,7 +790,7 @@ def critique_nl_atl_pair(
         # If parsing fails, return a default response
         return {
             "ok": False,
-            "issues": ["Failed to parse LLM response"],
+            "issues": ["Failed to parse LLM critique response"],
             "explanation": response.text,
             "suggested_fix": None,
         }
@@ -609,9 +802,11 @@ def paraphrase_nl(
     client: Optional[LLMClient] = None,
     provider: str = "openai",
     preserve_entities: bool = True,
-) -> list[str]:
+) -> List[str]:
     """
     Generate paraphrases of a natural language requirement.
+    
+    Useful for data augmentation in dataset generation.
     
     Args:
         nl_text: The original NL text
@@ -626,36 +821,83 @@ def paraphrase_nl(
     if client is None:
         client = get_llm_client(provider)
 
-    constraint = ""
-    if preserve_entities:
-        constraint = (
-            "IMPORTANT: Keep all agent names, coalition references, and proposition "
-            "names exactly as they appear in the original. Only rephrase the "
-            "surrounding language."
-        )
-
-    prompt = f"""Generate {num_paraphrases} different paraphrases of the following requirement.
-Each paraphrase should preserve the exact meaning, agents, and temporal relationships.
-
-{constraint}
-
-Original: {nl_text}
-
-Provide exactly {num_paraphrases} paraphrases, one per line, numbered 1-{num_paraphrases}.
-Do not include the original sentence in your response."""
-
+    prompt = build_paraphrase_prompt(nl_text, num_paraphrases, preserve_entities)
     response = client.generate(prompt, max_tokens=512, temperature=0.7)
 
     # Parse numbered list
     paraphrases = []
     for line in response.text.strip().split("\n"):
         line = line.strip()
-        # Remove numbering like "1.", "1)", etc.
+        # Remove numbering like "1.", "1)", "1:", etc.
         line = re.sub(r"^\d+[\.\)\:]?\s*", "", line)
         if line and line != nl_text:
             paraphrases.append(line)
 
     return paraphrases[:num_paraphrases]
+
+
+# =============================================================================
+# Batch Processing
+# =============================================================================
+
+
+def translate_batch(
+    nl_texts: List[str],
+    config: Optional[Dict[str, Any]] = None,
+    client: Optional[LLMClient] = None,
+    validate: bool = True,
+    progress_callback: Optional[callable] = None,
+) -> List[Dict[str, Any]]:
+    """
+    Translate multiple NL texts to ATL.
+    
+    Args:
+        nl_texts: List of NL requirements
+        config: Translation configuration
+        client: LLM client
+        validate: Whether to validate results
+        progress_callback: Optional callback(i, total) for progress
+        
+    Returns:
+        List of results, each with:
+        - nl_text: original text
+        - formulas: list of ATL formulas
+        - success: whether translation succeeded
+    """
+    config = config or {}
+    
+    if client is None:
+        provider = config.get("provider", "openai")
+        client = get_llm_client(provider)
+    
+    results = []
+    total = len(nl_texts)
+    
+    for i, nl_text in enumerate(nl_texts):
+        try:
+            formulas = translate_nl_to_atl(
+                nl_text, 
+                config=config, 
+                client=client, 
+                validate=validate
+            )
+            results.append({
+                "nl_text": nl_text,
+                "formulas": formulas,
+                "success": len(formulas) > 0,
+            })
+        except Exception as e:
+            results.append({
+                "nl_text": nl_text,
+                "formulas": [],
+                "success": False,
+                "error": str(e),
+            })
+        
+        if progress_callback:
+            progress_callback(i + 1, total)
+    
+    return results
 
 
 # =============================================================================
@@ -665,30 +907,86 @@ Do not include the original sentence in your response."""
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Translate NL to ATL formula")
-    parser.add_argument("nl_text", nargs="?", help="Natural language text to translate")
-    parser.add_argument("--provider", default="openai", help="LLM provider")
-    parser.add_argument("--no-validate", action="store_true", help="Skip validation")
-    parser.add_argument("--critique", action="store_true", help="Also critique the result")
+    parser = argparse.ArgumentParser(
+        description="Translate Natural Language to ATL formulas",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  python nl2atl.py "The robot can eventually reach the goal"
+  python nl2atl.py "Agents 1 and 2 can ensure safety" --critique
+  python nl2atl.py "..." --provider mock
+        """
+    )
+    
+    parser.add_argument(
+        "nl_text", 
+        nargs="?", 
+        help="Natural language text to translate"
+    )
+    parser.add_argument(
+        "--provider", 
+        default="openai", 
+        choices=["openai", "azure", "mock"],
+        help="LLM provider (default: openai)"
+    )
+    parser.add_argument(
+        "--no-validate", 
+        action="store_true", 
+        help="Skip ATL validation"
+    )
+    parser.add_argument(
+        "--critique", 
+        action="store_true", 
+        help="Also critique the result"
+    )
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Output as JSON"
+    )
 
     args = parser.parse_args()
 
     if args.nl_text:
         config = {"provider": args.provider}
-        results = translate_nl_to_atl(
-            args.nl_text, config=config, validate=not args.no_validate
-        )
-        print("Translation results:")
-        for r in results:
-            print(f"  {r}")
-
-        if args.critique and results:
-            print("\nCritique:")
-            critique = critique_nl_atl_pair(args.nl_text, results[0], provider=args.provider)
-            print(f"  OK: {critique['ok']}")
-            if critique["issues"]:
-                print(f"  Issues: {critique['issues']}")
-            if critique["suggested_fix"]:
-                print(f"  Suggested fix: {critique['suggested_fix']}")
+        
+        try:
+            results = translate_nl_to_atl(
+                args.nl_text, 
+                config=config, 
+                validate=not args.no_validate
+            )
+            
+            output = {
+                "nl_text": args.nl_text,
+                "formulas": results,
+            }
+            
+            if args.critique and results:
+                critique = critique_nl_atl_pair(
+                    args.nl_text, 
+                    results[0], 
+                    provider=args.provider
+                )
+                output["critique"] = critique
+            
+            if args.json:
+                print(json.dumps(output, indent=2))
+            else:
+                print("Translation results:")
+                for r in results:
+                    print(f"  {r}")
+                
+                if args.critique and results:
+                    print("\nCritique:")
+                    print(f"  OK: {critique['ok']}")
+                    if critique["issues"]:
+                        print(f"  Issues: {critique['issues']}")
+                    if critique["suggested_fix"]:
+                        print(f"  Suggested fix: {critique['suggested_fix']}")
+                        
+        except ValueError as e:
+            print(f"Error: {e}")
+            print("Make sure to set the appropriate API key environment variable.")
     else:
         parser.print_help()
