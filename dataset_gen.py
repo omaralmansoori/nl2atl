@@ -356,6 +356,7 @@ class GenerationConfig:
         paraphrases_per_template: Number of paraphrases per base pair
         use_llm_paraphrasing: Enable LLM-based paraphrasing
         use_cross_checking: Enable LLM-based quality checking
+        verification_provider: Optional provider override for verification
         llm_provider: Provider for LLM calls
         max_agents: Maximum agents in coalitions
         output_format: Output format (jsonl or csv)
@@ -366,6 +367,7 @@ class GenerationConfig:
     paraphrases_per_template: int = 3
     use_llm_paraphrasing: bool = True
     use_cross_checking: bool = True
+    verification_provider: Optional[str] = None
     llm_provider: str = "openai"
     max_agents: int = 3
     output_format: str = "jsonl"
@@ -415,6 +417,9 @@ class DatasetGenerator:
         """
         self.config = config
         self.client = client
+        self.verification_client: Optional[LLMClient] = (
+            client if client and (config.verification_provider is None or config.verification_provider == config.llm_provider) else None
+        )
 
         if config.seed is not None:
             random.seed(config.seed)
@@ -436,11 +441,18 @@ class DatasetGenerator:
         if self.config.verbose:
             print(message)
 
-    def _get_client(self) -> LLMClient:
-        """Get or create LLM client."""
+    def _get_generation_client(self) -> LLMClient:
+        """Get or create LLM client for generation/paraphrasing."""
         if self.client is None:
             self.client = get_llm_client(self.config.llm_provider)
         return self.client
+
+    def _get_verification_client(self) -> LLMClient:
+        """Get or create LLM client for verification/cross-checking."""
+        if self.verification_client is None:
+            provider = self.config.verification_provider or self.config.llm_provider
+            self.verification_client = get_llm_client(provider)
+        return self.verification_client
 
     def _get_default_templates(self) -> List[Dict[str, str]]:
         """Get default templates if config not found."""
@@ -530,7 +542,7 @@ class DatasetGenerator:
         if not self.config.use_llm_paraphrasing:
             return pairs
 
-        client = self._get_client()
+        client = self._get_generation_client()
         result = list(pairs)  # Keep originals
 
         for i, pair in enumerate(pairs):
@@ -571,7 +583,7 @@ class DatasetGenerator:
         if not self.config.use_cross_checking:
             return pairs
 
-        client = self._get_client()
+        client = self._get_verification_client()
         checked = []
 
         for i, pair in enumerate(pairs):
@@ -614,6 +626,7 @@ class DatasetGenerator:
                 pair.syntax_valid = False
                 pair.verification_notes = [f"Critique error: {str(e)}"]
                 pair.confidence = 0.5
+                checked.append(pair)
 
         return checked
 
@@ -781,6 +794,13 @@ Examples:
         help="LLM provider (default: openai)",
     )
     parser.add_argument(
+        "--verification-provider",
+        type=str,
+        default=None,
+        choices=["openai", "azure", "mock"],
+        help="LLM provider to use for verification (default: match provider)",
+    )
+    parser.add_argument(
         "--paraphrases",
         type=int,
         default=3,
@@ -822,6 +842,7 @@ Examples:
         paraphrases_per_template=args.paraphrases,
         use_llm_paraphrasing=not args.no_paraphrase,
         use_cross_checking=not args.no_crosscheck,
+        verification_provider=args.verification_provider,
         llm_provider=args.provider,
         max_agents=args.max_agents,
         output_format=args.format,
