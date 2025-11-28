@@ -1,0 +1,59 @@
+“X will eventually force B to happen.”
+<<X>> F B
+
+“X will ensure that C never becomes true.”
+<<X>> G ¬C
+
+“X will ensure that once A becomes true, it stays true forever.”
+<<X>> G (A ⇒ G A)
+
+“X will ensure that B is always true.”
+<<X>> G B
+
+“X will ensure that B will eventually become false and stay false forever.”
+ <<X>> F (¬B ∧ G ¬B)
+
+“X will ensure that once becomes false it stays false forever.”
+<<X>> G (¬B → G ¬B)
+
+“X will ensure that once D becomes false, it will eventually become true again.”
+<<X>> G (¬D → F D)
+
+“X will ensure that C will always eventually stop being true.”
+<<X>> G F ¬C
+
+“X will ensure that B will eventually become true and stay true forever.”
+<<X>> F (B ∧ G B)
+
+“X will ensure that A and C are never true at the same time.”
+<<X>> G ¬(A ∧ C)
+
+“X will ensure that whenever D becomes true, B will eventually become true after it.”
+<<X>> G (D → F B)
+
+“X will ensure that A happens at least once, but B never happens.”
+<<X>> (F A ∧ G ¬B)
+
+“X will ensure that A will remain false until D becomes true.”
+<<X>> (¬A U D)
+
+“X will ensure that eventually both C and D are true at the same time.”
+<<X>> F (C ∧ D)
+
+“X will ensure that both C and D are never true at the same time.”
+ <<X>> G ¬(C ∧ D)
+
+“X will ensure that if A is ever true, then B will eventually become.”
+<<X>> G (A → F ¬B)
+
+“X will ensure that neither A nor C ever becomes true.”
+<<X>> G (¬A ∧ ¬C)
+
+“X will ensure that eventually A or B becomes permanently true.”
+<<X>> F (G A ∨ G B)
+
+“X will ensure that B eventually becomes true and remains true until C becomes false.”
+<<X>> (F B ∧ (B U ¬C))
+
+“X will ensure that once C becomes true, D will eventually become false, and after that D will stay false forever.”
+<<X>> G (C → F (¬D ∧ G ¬D))

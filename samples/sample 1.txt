@@ -1,0 +1,58 @@
+“The drone controller must always prevent collisions”
+<<DroneController>> G(no_collision)
+
+“The navigation module must ensure every deviation is eventually corrected”
+<<Navigation>> G(deviation ⇒ F(corrected))
+
+“The safety monitor must guarantee that no unsafe state is ever reached”
+<<SafetyMonitor>> G(¬unsafe_state)
+
+“The autopilot must ensure the aircraft eventually stabilizes after turbulence”
+<<Autopilot>> F(stable)
+
+“The cooling system must maintain temperature within limits at all times”
+<<CoolingSystem>> G(temp_within_limits)
+
+“The robot arm controller must ensure that overload triggers an emergency stop”
+<<RobotArmController>> G(overload ⇒ F(emergency_stop))
+
+“The braking system must keep vehicle speed safe continually”
+<<BrakingSystem>> G(safe_speed)
+
+“The hazard detector must ensure that if smoke appears, an alarm is triggered”
+<<HazardDetector>> G(smoke ⇒ F(alarm))
+
+“The stabilizer unit must maintain balance under all conditions”
+<<Stabilizer>> G(balanced)
+
+“The power controller must eventually restore power after a temporary outage”
+<<PowerController>> outage ⇒ F(restored)
+“All replicas must maintain consistency across operations”
+<<ReplicaNodes>> G(consistency)
+
+“The leader node must ensure every request eventually receives consensus”
+<<Leader>> G(request ⇒ F(consensus))
+
+“The cluster managers must ensure load is balanced eventually when overloaded”
+<<ClusterManagers>> G(overload ⇒ F(balanced))
+
+“The scheduler must guarantee that queued tasks eventually execute”
+<<Scheduler>> G(task_in_queue ⇒ F(executed))
+
+“The orchestrator must ensure all services eventually become reachable after deployment”
+<<Orchestrator>> F(all_services_reachable)
+
+“The distributed monitor must always detect node failures”
+<<DistMonitor>> G(node_fail ⇒ F(detected))
+
+“The consensus group must ensure no conflicting decisions occur”
+<<ConsensusGroup>> G(¬conflict)
+
+“The membership service must eventually update the cluster view after joins/leaves”
+<<MembershipService>> G(change ⇒ F(view_updated))
+
+“The replication controller must ensure updates eventually propagate to all nodes”
+<<ReplicationController>> G(update ⇒ F(propagated))
+
+“The checkpoint service must always maintain a valid recovery point”
+<<CheckpointService>> G(valid_checkpoint)

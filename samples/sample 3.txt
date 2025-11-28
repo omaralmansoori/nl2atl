@@ -1,0 +1,150 @@
+A user must not access a resource until authentication succeeds.
+<<system>> G (¬authentication -> ¬access)
+
+A process must not modify a file after the file has been locked.
+<<system>> G (locked -> ¬modify)
+
+A module must not update its configuration while it is in a failed state.
+<<system>> G (failed -> ¬updateConfig)
+
+A session must not perform any action until the user identity is verified.
+<<system>> G (¬verified -> ¬action)
+
+A user must not change permissions after the request has been revoked.
+<<system>> G (revoked -> ¬changePermission)
+
+A resource must not be deleted while it is being accessed by another process.
+<<system>> G (accessed -> ¬delete)
+
+A process must not write to a log file unless write access is granted.
+<<system>> G (¬granted -> ¬writeLog)
+
+A user must not view confidential data without an active authorization token.
+<<system>> G (¬token -> ¬view)
+
+A worker process must not start a new task while it is still handling a previous task.
+<<system>> G (handlingTask -> ¬startTask)
+
+A controller must not assign a resource until the resource is marked available.
+<<system>> G (¬available -> ¬assignResource)
+
+A service must not trigger an update after the update window has expired.
+<<system>> G (updateExpired -> ¬update)
+
+A file must not be opened for editing unless its checksum has been validated.
+<<system>> G (¬checksumValidated -> ¬fileEdit)
+
+A module must not transition to “active” unless initialization has completed successfully.
+<<system>> G (¬initCompleted -> ¬activeModule)
+
+A user must not upload data while the system is in maintenance mode.
+<<system>> G (maintenance -> ¬upload)
+
+A background job must not run unless the scheduler signals readiness.
+<<system>> G (¬readySignal -> ¬jobRunning)
+
+A request must not proceed if its integrity check fails.
+<<system>> G (checkFailed -> ¬requestProceed)
+
+A process must not execute privileged operations unless elevated rights are granted.
+<<system>> G (¬rights -> ¬privilegedOperations)
+
+A session must not update user preferences before configuration data is loaded.
+<<system>> G (¬configurationLoaded -> ¬updatePreference)
+
+A resource must not enter the “deleted” state unless all dependencies are released.
+<<system>> G (¬dependenciesReleased -> ¬deletedState)
+
+A node must not send messages after it has been deactivated.
+<<system>> G (deactivated -> ¬sendMessages)
+
+A worker must not retry an operation until the cooldown period has expired.
+<<system>> G (¬cooldownExpired -> ¬retryOperation)
+
+A module must not log events unless the logging service is available.
+<<system>> G (¬loggingAvailable -> ¬logEvent)
+
+A transaction must not commit while any validation rule remains unsatisfied.
+<<system>> G (validationUnsatisfied -> ¬commit)
+
+A user must not download files unless their access level matches the file’s classification.
+<<system>> G (¬accessLevelAllowed -> ¬download)
+
+A process must not interact with a queue until the queue is initialized.
+<<system>> G (¬queueInitialized -> ¬queueInteract)
+
+A service must not accept new requests while it is shutting down.
+<<system>> G (shuttingDown -> ¬acceptRequests)
+
+A user must not reset their password unless identity verification succeeds.
+<<system>> G (¬identityVerified -> ¬resetPassword)
+
+A component must not read configuration files before initialization completes.
+<<system>> G (¬initialized -> ¬readConfig)
+
+A process must not access shared memory unless it holds the required lock.
+<<system>> G (¬lockHeld -> ¬sharedMemoryAccess)
+
+A transaction must not roll back after results have been committed.
+<<system>> G (resultsCommitted -> ¬rollback)
+
+A device must not send telemetry data unless connectivity is established.
+<<system>> G (¬connected -> ¬sendTelemetry)
+
+A server must not accept connections when firewall rules are invalid.
+<<system>> G (firewallInvalid -> ¬acceptConnections)
+
+A user must not change account settings without an active session.
+<<system>> G (¬activeSession -> ¬changeSettings)
+
+A job must not start until all prerequisite jobs have completed.
+<<system>> G (¬prerequisitesCompleted -> ¬jobStart)
+
+A record must not be updated after it has been archived.
+<<system>> G (archived -> ¬updateRecord)
+
+A task must not proceed while its parent task is in an error state.
+<<system>> G (parentError -> ¬taskProceed)
+
+A container must not launch unless the required environment variables are provided.
+<<system>> G (¬envProvided -> ¬launchContainer)
+
+A user must not delete audit logs under any condition.
+<<system>> G (¬deleteAuditLogs)
+
+A process must not enter the running state unless resources are allocated.
+<<system>> G (¬resourcesAllocated -> ¬runningState)
+
+A client must not send data before the handshake is acknowledged.
+<<system>> G (¬handshakeAck -> ¬sendData)
+
+A file must not be overwritten unless write permission is explicitly granted.
+<<system>> G (¬writePermission -> ¬overwrite)
+
+A node must not participate in coordination until it has synchronized its clock.
+<<system>> G (¬clockSynced -> ¬coordinate)
+
+A request must not bypass validation before reaching the service layer.
+Interpreting as “if not validated → must not reach service layer”:
+<<system>> G (¬validated -> ¬serviceAccess)
+
+A computation must not continue if the safety condition becomes false.
+<<system>> G (¬safetyCondition -> ¬continueComputation)
+
+A worker must not access restricted data unless the policy rule is satisfied.
+<<system>> G (¬policySatisfied -> ¬accessRestrictedData)
+
+A runtime must not load plugins after the secure mode is activated.
+<<system>> G (secureMode -> ¬loadPlugin)
+
+A database must not replicate changes unless replication is enabled.
+<<system>> G (¬replicationEnabled -> ¬replicateChanges)
+
+A pipeline must not advance stages while a blocking condition is active.
+<<system>> G (blockingCondition -> ¬advanceStage)
+
+A message must not be delivered unless the receiver is registered.
+<<system>> G (¬receiverRegistered -> ¬deliverMessage)
+
+A system must not grant access when authentication has failed.
+<<system>> G (authenticationFailed -> ¬grantAccess)
