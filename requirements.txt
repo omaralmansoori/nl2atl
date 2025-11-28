@@ -7,8 +7,8 @@ PyYAML>=6.0
 
 # LLM API clients
 openai>=1.0.0
+anthropic>=0.18.0
 
 # Optional: Azure support (included in openai package)
 # Optional: For additional providers, install:
-# anthropic>=0.18.0
 # google-generativeai>=0.4.0
