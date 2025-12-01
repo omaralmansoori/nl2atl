@@ -14,11 +14,12 @@ import json
 import re
 import signal
 import atexit
+import hashlib
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
 from dataclasses import dataclass, field
-from collections import defaultdict
+from collections import defaultdict, Counter
 
 # Load environment
 from dotenv import load_dotenv
@@ -73,14 +74,25 @@ class RunState:
         if not self.run_id:
             return None, None
         
-        # Save samples
+        # Save samples in JSONL format (one per line)
         samples_file = Path(f"data/verified_{SAMPLES_PER_CONFIG * 4}_{self.run_id}.jsonl")
         samples_file.parent.mkdir(exist_ok=True)
         with open(samples_file, "w") as f:
             for sample in self.samples:
                 f.write(json.dumps(sample) + "\n")
         
-        # Save full report
+        # Save unified JSON format (like unified_samples.json)
+        unified_file = Path(f"data/verified_unified_{self.run_id}.json")
+        unified_data = {
+            "version": "1.0",
+            "generated_at": datetime.now().isoformat(),
+            "samples": self.samples,
+            "stats": self._compute_unified_stats(),
+        }
+        with open(unified_file, "w") as f:
+            json.dump(unified_data, f, indent=2)
+        
+        # Save full report with metadata
         report = {
             "run_id": self.run_id,
             "start_time": self.start_time,
@@ -91,7 +103,6 @@ class RunState:
                 "total_expected": SAMPLES_PER_CONFIG * 4,
             },
             "stats": self._compute_stats(),
-            "samples": self.samples,
             "errors": self.errors,
         }
         
@@ -103,7 +114,7 @@ class RunState:
         return samples_file, report_file
     
     def _compute_stats(self):
-        """Compute statistics from samples."""
+        """Compute statistics from samples (for report)."""
         stats = {
             "total": len(self.samples),
             "verified": 0,
@@ -140,6 +151,49 @@ class RunState:
         stats["issues"] = dict(stats["issues"])
         
         return stats
+    
+    def _compute_unified_stats(self):
+        """Compute statistics matching unified_samples.json format."""
+        all_agents = []
+        all_atoms = []
+        all_operators = []
+        domain_counts = Counter()
+        config_counts = Counter()
+        verified_count = 0
+        syntax_valid_count = 0
+        complexity_scores = []
+        
+        for s in self.samples:
+            domain_counts[s.get("domain", "unknown")] += 1
+            config_counts[s.get("config_name", "unknown")] += 1
+            
+            if s.get("verification_status") == "verified":
+                verified_count += 1
+            if not s.get("syntax_errors"):
+                syntax_valid_count += 1
+            
+            all_agents.extend(s.get("agents", []))
+            all_atoms.extend(s.get("atoms", []))
+            all_operators.extend(s.get("operators", []))
+            
+            # Simple complexity = number of operators + agents
+            complexity = len(s.get("operators", [])) + len(s.get("agents", []))
+            complexity_scores.append(complexity)
+        
+        avg_complexity = sum(complexity_scores) / len(complexity_scores) if complexity_scores else 0
+        
+        return {
+            "total_samples": len(self.samples),
+            "unique_domains": len(domain_counts),
+            "domain_distribution": dict(domain_counts),
+            "config_distribution": dict(config_counts),
+            "verified_count": verified_count,
+            "syntax_valid_count": syntax_valid_count,
+            "unique_agents": len(set(all_agents)),
+            "unique_atoms": len(set(all_atoms)),
+            "avg_complexity": round(avg_complexity, 2),
+            "operator_distribution": dict(Counter(all_operators)),
+        }
 
 
 # Global state
@@ -233,8 +287,64 @@ def get_client(provider: str):
 
 
 # ============================================================================
-# ATL VALIDATION (Regex-based to avoid pyparsing issues)
+# ATL VALIDATION AND PARSING
 # ============================================================================
+
+def extract_components(formula: str) -> dict:
+    """Extract agents, operators, and atoms from ATL formula."""
+    components = {
+        "agents": [],
+        "operators": [],
+        "atoms": [],
+    }
+    
+    # Extract agents from <<...>>
+    coalition_match = re.search(r'<<([^>]+)>>', formula)
+    if coalition_match:
+        agents_str = coalition_match.group(1)
+        components["agents"] = [a.strip() for a in agents_str.split(',')]
+    
+    # Extract temporal operators
+    for op in ['G', 'F', 'X', 'U', 'W', 'R']:
+        if op in formula:
+            components["operators"].append(op)
+    
+    # Extract logical operators
+    if '&' in formula:
+        components["operators"].append('&')
+    if '|' in formula:
+        components["operators"].append('|')
+    if '->' in formula:
+        components["operators"].append('->')
+    if '!' in formula:
+        components["operators"].append('!')
+    
+    # Extract atoms (identifiers that are not operators or keywords)
+    # Simple heuristic: lowercase words/underscored identifiers
+    atom_pattern = r'\b[a-z][a-z0-9_]*\b'
+    potential_atoms = re.findall(atom_pattern, formula)
+    # Filter out known operators and keywords
+    reserved = {'true', 'false', 'and', 'or', 'not'}
+    components["atoms"] = [a for a in potential_atoms if a not in reserved]
+    
+    return components
+
+def formula_to_unicode(formula: str) -> str:
+    """Convert ATL formula to Unicode representation."""
+    unicode_formula = formula
+    unicode_formula = unicode_formula.replace('<<', '⟨⟨')
+    unicode_formula = unicode_formula.replace('>>', '⟩⟩')
+    unicode_formula = unicode_formula.replace('->', '→')
+    unicode_formula = unicode_formula.replace('!', '¬')
+    unicode_formula = unicode_formula.replace('&', '∧')
+    unicode_formula = unicode_formula.replace('|', '∨')
+    return unicode_formula
+
+def generate_sample_id(nl: str, atl: str) -> str:
+    """Generate a unique 12-character hex ID for a sample."""
+    content = f"{nl}|{atl}"
+    hash_obj = hashlib.md5(content.encode())
+    return hash_obj.hexdigest()[:12]
 
 def validate_atl_syntax(formula: str) -> tuple[bool, list[str]]:
     """Validate ATL formula syntax using regex patterns."""
@@ -375,72 +485,114 @@ Respond in JSON:
 
 def generate_sample(generator_client, verifier_client, domain: str, pattern: str, config_name: str) -> Optional[dict]:
     """Generate and verify a single sample."""
-    sample = {
+    # Initialize with metadata (will be transformed later)
+    metadata = {
         "config_name": config_name,
         "generator": type(generator_client).__name__,
         "verifier": type(verifier_client).__name__,
         "domain": domain,
         "pattern": pattern,
-        "timestamp": datetime.now().isoformat(),
     }
     
     # Generate NL
     try:
         nl = generate_nl(generator_client, domain, pattern)
         if not nl:
-            sample["error"] = "NL generation returned empty"
-            return sample
-        sample["nl"] = nl
+            return {**metadata, "error": "NL generation returned empty"}
         print("NL✓ ", end="", flush=True)
     except Exception as e:
-        sample["error"] = f"NL generation error: {e}"
         print(f"❌ NL failed: {e}")
-        return sample
+        return {**metadata, "error": f"NL generation error: {e}"}
     
     # Translate to ATL
     try:
         atl = translate_to_atl(generator_client, nl, domain)
         if not atl:
-            sample["error"] = "ATL translation returned empty"
-            return sample
+            return {**metadata, "nl_statement": nl, "error": "ATL translation returned empty"}
         
         # Validate syntax
         valid, syntax_errors = validate_atl_syntax(atl)
         if not valid:
-            sample["atl"] = atl
-            sample["syntax_errors"] = syntax_errors
-            sample["verification_status"] = "rejected"
-            sample["rejection_reasons"] = syntax_errors
+            sample_id = generate_sample_id(nl, atl)
+            components = extract_components(atl)
             print(f"❌ Invalid syntax: {syntax_errors}")
-            return sample
+            return {
+                "id": sample_id,
+                "nl_statement": nl,
+                "atl_formula": atl,
+                "atl_unicode": formula_to_unicode(atl),
+                "domain": domain,
+                "source_file": f"verified_{config_name}",
+                "agents": components["agents"],
+                "operators": components["operators"],
+                "atoms": components["atoms"],
+                "verification_notes": syntax_errors,
+                "verification_status": "rejected",
+                "rejection_reasons": syntax_errors,
+                "created_at": datetime.now().isoformat(),
+                "metadata": metadata,
+            }
         
-        sample["atl"] = atl
         print("ATL✓ ", end="", flush=True)
     except Exception as e:
-        sample["error"] = f"ATL translation error: {e}"
         print(f"❌ ATL failed: {e}")
-        return sample
+        return {**metadata, "nl_statement": nl, "error": f"ATL translation error: {e}"}
+    
+    # Extract components
+    components = extract_components(atl)
+    sample_id = generate_sample_id(nl, atl)
     
     # Verify with cross-model
+    verification_notes = []
+    verification_status = "verified"
+    rejection_reasons = []
+    
     try:
         verification = verify_pair(verifier_client, nl, atl, domain)
-        sample["verification"] = verification
         
         verdict = verification.get("verdict", "NEEDS_REVIEW").upper()
+        confidence = verification.get("confidence", 0.5)
+        explanation = verification.get("explanation", "")
+        
+        verification_notes.append(f"Verifier: {metadata['verifier']}")
+        verification_notes.append(f"Verdict: {verdict} (confidence: {confidence})")
+        if explanation:
+            verification_notes.append(f"Explanation: {explanation}")
+        
         if verdict == "ACCEPT":
-            sample["verification_status"] = "verified"
+            verification_status = "verified"
             print("✅")
         elif verdict == "REJECT":
-            sample["verification_status"] = "rejected"
-            sample["rejection_reasons"] = verification.get("issues", [])
+            verification_status = "rejected"
+            rejection_reasons = verification.get("issues", [])
             print("❌")
         else:
-            sample["verification_status"] = "needs_review"
+            verification_status = "needs_review"
             print("⚠️")
     except Exception as e:
-        sample["verification_status"] = "needs_review"
-        sample["verification_error"] = str(e)
+        verification_status = "needs_review"
+        verification_notes.append(f"Verification error: {e}")
         print(f"⚠️ Verify error: {e}")
+    
+    # Build sample in unified format
+    sample = {
+        "id": sample_id,
+        "nl_statement": nl,
+        "atl_formula": atl,
+        "atl_unicode": formula_to_unicode(atl),
+        "domain": domain,
+        "source_file": f"verified_{config_name}",
+        "agents": components["agents"],
+        "operators": components["operators"],
+        "atoms": components["atoms"],
+        "verification_notes": verification_notes,
+        "verification_status": verification_status,
+        "created_at": datetime.now().isoformat(),
+        "metadata": metadata,
+    }
+    
+    if rejection_reasons:
+        sample["rejection_reasons"] = rejection_reasons
     
     return sample
 
