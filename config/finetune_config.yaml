@@ -1,0 +1,113 @@
+# =============================================================================
+# NL2ATL Fine-tuning Configuration
+# =============================================================================
+# This file configures fine-tuning jobs for NL2ATL models.
+# Copy this file and modify as needed for different experiments.
+
+# -----------------------------------------------------------------------------
+# Data Sources
+# -----------------------------------------------------------------------------
+# List of data source files to use for training.
+# Supports both .jsonl and .json formats.
+# Paths are relative to the project root or can be absolute.
+
+sources:
+  - data/experiment_20251201_200910_verified.jsonl
+  # - data/verified_100_b8c6f07d.jsonl
+  # - data/nl_atl_dataset.jsonl
+
+# -----------------------------------------------------------------------------
+# Model Configuration
+# -----------------------------------------------------------------------------
+# Base model to fine-tune.
+# Supported models:
+#   - gpt-4o-mini-2024-07-18 (recommended for cost-efficiency)
+#   - gpt-4o-2024-08-06 (higher quality, more expensive)
+#   - gpt-4-0613
+#   - gpt-3.5-turbo-0125
+#   - gpt-3.5-turbo-1106
+#   - gpt-3.5-turbo-0613
+
+model: gpt-4o-mini-2024-07-18
+
+# Custom suffix for the fine-tuned model name.
+# The final model name will be: ft:{base-model}:{org}:{suffix}:{id}
+suffix: nl2atl
+
+# -----------------------------------------------------------------------------
+# Training Hyperparameters
+# -----------------------------------------------------------------------------
+# Set to null/~ for auto (OpenAI defaults)
+
+# Number of training epochs (1-50)
+# More epochs = longer training, potential overfitting
+# Fewer epochs = faster training, potential underfitting
+n_epochs: ~  # Auto (usually 3-4)
+
+# Batch size for training
+# Larger = faster training, more memory
+# Smaller = slower training, better generalization
+batch_size: ~  # Auto
+
+# Learning rate multiplier (0.02-0.2)
+# Higher = faster learning, potential instability
+# Lower = slower learning, more stable
+learning_rate_multiplier: ~  # Auto
+
+# -----------------------------------------------------------------------------
+# Validation Configuration
+# -----------------------------------------------------------------------------
+
+# Fraction of data to hold out for validation (0.0-0.3)
+validation_split: 0.1
+
+# -----------------------------------------------------------------------------
+# Prompt Configuration
+# -----------------------------------------------------------------------------
+
+# System prompt for the fine-tuned model.
+# This sets the context for how the model should behave.
+system_prompt: |
+  You are an expert in translating natural language requirements into 
+  Alternating-time Temporal Logic (ATL) formulas. Given a natural language 
+  statement describing agent capabilities and temporal properties, generate 
+  the corresponding ATL formula using proper syntax with coalition operators 
+  ⟨⟨...⟩⟩, temporal operators (G, F, X, U), and logical operators (∧, ∨, →, ¬).
+
+# Whether to include domain context in user prompts.
+# If true, the domain (e.g., "telecommunications", "healthcare") will be 
+# added to the prompt to help the model understand the context.
+include_domain: true
+
+# Whether to include the list of agents in user prompts.
+# If true, the agents mentioned in the NL statement will be listed 
+# to help the model identify coalition members.
+include_agents: true
+
+# -----------------------------------------------------------------------------
+# Output Configuration
+# -----------------------------------------------------------------------------
+
+# Directory to save prepared training files (optional)
+# Set to null to skip saving
+output_dir: data/finetune
+
+# -----------------------------------------------------------------------------
+# Advanced Configuration
+# -----------------------------------------------------------------------------
+
+# Minimum confidence threshold for samples to be included (0.0-1.0)
+# Only samples with verification_confidence >= this value are used.
+min_confidence: 0.8
+
+# Filter by verification status
+# Options: all, verified, rejected
+verification_status_filter: verified
+
+# Domain filter (list of domains to include, or null for all)
+domain_filter: ~
+#   - telecommunications
+#   - healthcare_monitoring
+#   - autonomous_vehicles
+#   - smart_grid
+#   - air_traffic_control
