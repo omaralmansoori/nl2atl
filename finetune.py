@@ -106,6 +106,9 @@ class FinetuneConfig:
     verification_status_filter: str = "verified"
     domain_filter: Optional[List[str]] = None
     
+    # Reproducibility
+    seed: Optional[int] = None  # Seed for reproducible training
+    
     @classmethod
     def from_yaml(cls, filepath: Path) -> "FinetuneConfig":
         """
@@ -140,6 +143,7 @@ class FinetuneConfig:
             min_confidence=data.get('min_confidence', cls.min_confidence),
             verification_status_filter=data.get('verification_status_filter', cls.verification_status_filter),
             domain_filter=data.get('domain_filter'),
+            seed=data.get('seed'),
         )
 
 
@@ -488,6 +492,9 @@ def create_finetune_job(
     if config.suffix:
         kwargs["suffix"] = config.suffix
     
+    if config.seed is not None:
+        kwargs["seed"] = config.seed
+    
     job = client.fine_tuning.jobs.create(**kwargs)
     
     return {
@@ -663,6 +670,12 @@ def cli():
     help='Minimum verification confidence threshold (0.0-1.0).',
 )
 @click.option(
+    '--seed',
+    type=int,
+    default=None,
+    help='Seed for reproducible training.',
+)
+@click.option(
     '--include-domain/--no-domain',
     default=None,
     help='Include domain context in prompts.',
@@ -693,6 +706,7 @@ def train(
     suffix: Optional[str],
     validation_split: Optional[float],
     min_confidence: Optional[float],
+    seed: Optional[int],
     include_domain: Optional[bool],
     include_agents: Optional[bool],
     dry_run: bool,
@@ -742,6 +756,8 @@ def train(
         finetune_config.validation_split = validation_split
     if min_confidence is not None:
         finetune_config.min_confidence = min_confidence
+    if seed is not None:
+        finetune_config.seed = seed
     if include_domain is not None:
         finetune_config.include_domain = include_domain
     if include_agents is not None:
@@ -760,6 +776,8 @@ def train(
     click.echo(f"  Sources: {len(finetune_config.sources)} file(s)")
     click.echo(f"  Min Confidence: {finetune_config.min_confidence}")
     click.echo(f"  Validation Split: {finetune_config.validation_split}")
+    if finetune_config.seed is not None:
+        click.echo(f"  Seed: {finetune_config.seed}")
     
     # Load samples
     click.echo("\nLoading samples...")

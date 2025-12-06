@@ -77,7 +77,21 @@ def load_templates_config() -> dict:
     config_path = CONFIG_DIR / "templates_atl.json"
     if config_path.exists():
         with open(config_path, "r", encoding="utf-8") as f:
-            return json.load(f)
+            config = json.load(f)
+        
+        # Merge test domains if they exist
+        test_domains_path = CONFIG_DIR / "test_domains.json"
+        if test_domains_path.exists():
+            with open(test_domains_path, 'r', encoding='utf-8') as f:
+                test_config = json.load(f)
+                test_domains = test_config.get('test_domains', {})
+                
+                # Add test domains to the main config
+                if 'domains' not in config:
+                    config['domains'] = {}
+                config['domains'].update(test_domains)
+        
+        return config
     return {"templates": [], "few_shot_examples": []}
 
 
@@ -733,6 +747,101 @@ def translate_nl_to_atl(
             valid_formulas.append(candidate)
 
     return valid_formulas
+
+
+def translate_nl_to_atl_with_metrics(
+    nl_text: str,
+    config: Optional[Dict[str, Any]] = None,
+    client: Optional[LLMClient] = None,
+    validate: bool = True,
+) -> Dict[str, Any]:
+    """
+    Translate NL to ATL with detailed metrics including response time.
+    
+    This is an extended version of translate_nl_to_atl() that also tracks
+    performance metrics useful for benchmarking and comparison.
+    
+    Args:
+        nl_text: The natural language requirement
+        config: Optional configuration dict
+        client: Optional pre-configured LLM client
+        validate: Whether to validate extracted formulas
+        
+    Returns:
+        Dictionary with:
+            - formulas: List of ATL formula strings
+            - response_time: Time taken for LLM call (seconds)
+            - tokens_used: Total tokens used (if available)
+            - candidates_found: Number of candidate formulas extracted
+            - valid_count: Number of syntactically valid formulas
+            
+    Example:
+        >>> result = translate_nl_to_atl_with_metrics("Agents can ensure safety")
+        >>> print(result["formulas"])
+        ['⟨⟨1,2⟩⟩ G safe']
+        >>> print(f"Response time: {result['response_time']:.3f}s")
+        Response time: 0.542s
+    """
+    import time
+    
+    config = config or {}
+
+    # Get or create client
+    if client is None:
+        provider = config.get("provider", "openai")
+        client = get_llm_client(provider)
+
+    # Build prompt
+    few_shot = config.get("few_shot_examples")
+    custom_instructions = config.get("custom_instructions")
+    prompt = build_translation_prompt(
+        nl_text, 
+        few_shot,
+        custom_instructions=custom_instructions
+    )
+
+    # Call LLM with timing
+    max_tokens = config.get("max_tokens", 256)
+    temperature = config.get("temperature", 0.0)
+    
+    start_time = time.time()
+    response = client.generate(prompt, max_tokens=max_tokens, temperature=temperature)
+    end_time = time.time()
+    
+    response_time = end_time - start_time
+
+    # Extract candidates
+    candidates = extract_atl_from_response(response.text)
+    candidates_found = len(candidates)
+
+    if not validate:
+        return {
+            "formulas": candidates,
+            "response_time": response_time,
+            "tokens_used": getattr(response, 'tokens_used', 0),
+            "candidates_found": candidates_found,
+            "valid_count": len(candidates),
+        }
+
+    # Validate and filter
+    fragment_config = load_fragment_config()
+    constraints = fragment_config.get("constraints", {})
+    max_depth = constraints.get("max_nesting_depth", 4)
+    max_coalition = constraints.get("max_coalition_size", 5)
+
+    valid_formulas = []
+    for candidate in candidates:
+        is_ok, errors = validate_atl_string(candidate, max_depth, max_coalition)
+        if is_ok:
+            valid_formulas.append(candidate)
+
+    return {
+        "formulas": valid_formulas,
+        "response_time": response_time,
+        "tokens_used": getattr(response, 'tokens_used', 0),
+        "candidates_found": candidates_found,
+        "valid_count": len(valid_formulas),
+    }
 
 
 def critique_nl_atl_pair(
