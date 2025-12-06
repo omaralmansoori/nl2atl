@@ -142,6 +142,27 @@ generator = DatasetGenerator(config)
 pairs = generator.generate()
 ```
 
+### 🆕 Model Testing & Comparison
+
+**NEW**: Interactive GUI and comprehensive comparison tools for evaluating models.
+
+```bash
+# Interactive GUI for real-time testing
+python gui_tester.py
+
+# Full model comparison experiment (100 samples)
+python full_model_comparison.py --count 100 --verbose
+
+# Or use the quick-start script
+./run_experiment.sh 100
+
+# Analyze manual review results
+python analyze_review.py data/comparison_for_review_*.json
+```
+
+**📖 See [QUICKSTART.md](QUICKSTART.md) for detailed testing instructions.**
+**📚 See [TESTING_GUIDE.md](TESTING_GUIDE.md) for complete documentation.**
+
 ---
 
 ## ✅ Pre-Run Checklist
