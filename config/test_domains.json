@@ -1,0 +1,125 @@
+{
+  "description": "Test domains - different from training data domains for generalization testing",
+  "test_domains": {
+    "healthcare": {
+      "agents": ["PatientMonitor", "DrugDispenser", "VitalSigns", "AlertSystem", "NurseStation", "PhysicianConsole"],
+      "atoms": {
+        "vital_stable": "vital signs are stable",
+        "alert_triggered": "an alert is triggered",
+        "medication_administered": "medication is administered",
+        "dosage_correct": "the dosage is correct",
+        "patient_stable": "the patient is stable",
+        "heart_rate_normal": "heart rate is normal",
+        "oxygen_level_safe": "oxygen level is safe",
+        "alarm_acknowledged": "the alarm is acknowledged",
+        "emergency_called": "emergency is called",
+        "vitals_recorded": "vitals are recorded"
+      }
+    },
+    "smart_home": {
+      "agents": ["ThermostatController", "SecuritySystem", "LightingController", "DoorLock", "WindowController", "EnergyManager"],
+      "atoms": {
+        "temperature_comfortable": "temperature is comfortable",
+        "doors_locked": "doors are locked",
+        "windows_closed": "windows are closed",
+        "lights_on": "lights are on",
+        "lights_off": "lights are off",
+        "intruder_detected": "an intruder is detected",
+        "alarm_sounded": "the alarm sounds",
+        "energy_saved": "energy is saved",
+        "occupancy_detected": "occupancy is detected",
+        "away_mode_active": "away mode is active"
+      }
+    },
+    "autonomous_vehicles": {
+      "agents": ["CruiseControl", "BrakingSystem", "SteeringController", "LaneKeeper", "CollisionAvoidance", "TrafficAnalyzer"],
+      "atoms": {
+        "speed_limit_respected": "speed limit is respected",
+        "lane_maintained": "lane is maintained",
+        "safe_distance": "safe distance is maintained",
+        "pedestrian_detected": "a pedestrian is detected",
+        "brake_applied": "brakes are applied",
+        "turn_signal_on": "turn signal is on",
+        "stopped": "the vehicle is stopped",
+        "parking_complete": "parking is complete",
+        "obstacle_avoided": "obstacle is avoided",
+        "traffic_light_red": "traffic light is red"
+      }
+    },
+    "supply_chain": {
+      "agents": ["InventoryManager", "ShippingController", "WarehouseSystem", "OrderProcessor", "QualityControl", "DeliveryTracker"],
+      "atoms": {
+        "stock_available": "stock is available",
+        "order_fulfilled": "the order is fulfilled",
+        "shipment_dispatched": "shipment is dispatched",
+        "delivery_confirmed": "delivery is confirmed",
+        "quality_passed": "quality check passed",
+        "reorder_triggered": "reorder is triggered",
+        "warehouse_full": "warehouse is full",
+        "delayed": "there is a delay",
+        "inventory_counted": "inventory is counted",
+        "expiration_checked": "expiration is checked"
+      }
+    },
+    "financial_systems": {
+      "agents": ["FraudDetector", "PaymentProcessor", "AccountManager", "RiskAnalyzer", "ComplianceChecker", "AuditLogger"],
+      "atoms": {
+        "transaction_verified": "the transaction is verified",
+        "fraud_detected": "fraud is detected",
+        "payment_processed": "payment is processed",
+        "balance_updated": "balance is updated",
+        "limit_exceeded": "limit is exceeded",
+        "account_frozen": "the account is frozen",
+        "compliance_met": "compliance is met",
+        "audit_logged": "the audit is logged",
+        "authorization_required": "authorization is required",
+        "risk_assessed": "risk is assessed"
+      }
+    },
+    "energy_grid": {
+      "agents": ["GridBalancer", "PowerDistributor", "LoadController", "RenewableIntegrator", "BatteryManager", "DemandForecaster"],
+      "atoms": {
+        "grid_balanced": "the grid is balanced",
+        "load_distributed": "load is distributed",
+        "renewable_active": "renewable source is active",
+        "battery_charged": "battery is charged",
+        "battery_depleted": "battery is depleted",
+        "demand_met": "demand is met",
+        "blackout_avoided": "blackout is avoided",
+        "peak_load": "peak load is reached",
+        "surplus_stored": "surplus is stored",
+        "frequency_stable": "frequency is stable"
+      }
+    },
+    "air_traffic_control": {
+      "agents": ["FlightController", "RadarSystem", "RunwayManager", "WeatherMonitor", "CommunicationHub", "EmergencyCoordinator"],
+      "atoms": {
+        "clearance_granted": "clearance is granted",
+        "runway_clear": "runway is clear",
+        "aircraft_landed": "aircraft has landed",
+        "separation_maintained": "separation is maintained",
+        "weather_safe": "weather is safe",
+        "emergency_declared": "emergency is declared",
+        "holding_pattern": "aircraft is in holding pattern",
+        "altitude_assigned": "altitude is assigned",
+        "communication_established": "communication is established",
+        "conflict_resolved": "conflict is resolved"
+      }
+    },
+    "manufacturing": {
+      "agents": ["AssemblyLine", "QualityInspector", "RobotWelder", "ConveyorController", "PackagingUnit", "MaintenanceScheduler"],
+      "atoms": {
+        "part_assembled": "the part is assembled",
+        "inspection_passed": "inspection passed",
+        "defect_detected": "a defect is detected",
+        "welding_complete": "welding is complete",
+        "conveyor_running": "conveyor is running",
+        "packaging_done": "packaging is done",
+        "maintenance_due": "maintenance is due",
+        "production_stopped": "production is stopped",
+        "quota_met": "production quota is met",
+        "material_available": "material is available"
+      }
+    }
+  }
+}
