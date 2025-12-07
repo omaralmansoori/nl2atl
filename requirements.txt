@@ -9,6 +9,9 @@ PyYAML>=6.0
 openai>=1.0.0
 anthropic>=0.18.0
 
+# Web framework for interactive tester
+flask>=3.0.0
+
 # CLI framework
 click>=8.0.0
 
