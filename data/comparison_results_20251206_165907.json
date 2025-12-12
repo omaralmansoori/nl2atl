@@ -1,0 +1,314 @@
+[
+  {
+    "sample_id": "sample_001",
+    "nl_statement": "In a smart home environment, the coalition of the security system and smart lighting agents must ensure that if a security breach is detected, the smart lighting agents will activate all exterior lights within 5 seconds and continue to keep them illuminated until the security system confirms that the breach has been resolved.",
+    "nl_generator": "openai",
+    "translations": {
+      "openai_base": {
+        "atl_formula": "\u27e8\u27e8SecuritySystem, SmartLighting\u27e9\u27e9(BreachDetected \u2192 F(X \u2264 5 \u2227 LightsActivated \u2227 G(BreachResolved \u2192 \u00acLightsActivated)))",
+        "response_time": 1.5896580219268799,
+        "tokens_used": 204,
+        "error": null
+      },
+      "openai_finetuned": {
+        "atl_formula": "<<security_system, smart_lighting>> G(security_breach_detected -> F(exterior_lights_activated & (exterior_lights_activated U breach_resolved)))",
+        "response_time": 2.4980149269104004,
+        "tokens_used": 197,
+        "error": null
+      },
+      "claude": {
+        "atl_formula": "",
+        "response_time": 0.30319905281066895,
+        "tokens_used": 0,
+        "error": "Error code: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-5-sonnet-20241022'}, 'request_id': 'req_011CVqUast4pV5sYbAVhgkUV'}"
+      }
+    },
+    "timestamp": "2025-12-06T17:01:03.947912"
+  },
+  {
+    "sample_id": "sample_002",
+    "nl_statement": "In a smart home environment, the coalition of the security system and energy management system must guarantee that the home's security status is always monitored and reported to the homeowner within 5 seconds of any detected intrusion event, ensuring that the homeowner is alerted before the next 30 seconds have elapsed.",
+    "nl_generator": "openai",
+    "translations": {
+      "openai_base": {
+        "atl_formula": "\u27e8\u27e8SecuritySystem, EnergyManagementSystem\u27e9\u27e9 G (IntrusionDetected \u2192 F (ReportToHomeowner \u2227 X (\u00acIntrusionDetected U (AlertHomeowner \u2227 F (\u00acIntrusionDetected U (G (\u00acIntrusionDetected \u2227 F (AlertHomeowner))))))))",
+        "response_time": 2.1970369815826416,
+        "tokens_used": 228,
+        "error": null
+      },
+      "openai_finetuned": {
+        "atl_formula": "<<security_system, energy_management_system>> G(intrusion_detected -> F(homeowner_alerted & !next_30_seconds_elapsed))",
+        "response_time": 2.103135108947754,
+        "tokens_used": 188,
+        "error": null
+      },
+      "claude": {
+        "atl_formula": "",
+        "response_time": 0.2849609851837158,
+        "tokens_used": 0,
+        "error": "Error code: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-5-sonnet-20241022'}, 'request_id': 'req_011CVqUbDfwbD1P7RwHsmEBw'}"
+      }
+    },
+    "timestamp": "2025-12-06T17:01:08.560092"
+  },
+  {
+    "sample_id": "sample_003",
+    "nl_statement": "In an autonomous vehicle fleet operating within a smart city, it must be guaranteed that each vehicle will always prioritize pedestrian safety, ensuring that whenever a pedestrian is detected within 10 meters, the vehicle will eventually come to a complete stop before reaching the pedestrian.",
+    "nl_generator": "openai",
+    "translations": {
+      "openai_base": {
+        "atl_formula": "\u27e8\u27e8V\u27e9\u27e9 G (PedestrianDetected \u2192 F (\u00acMoving \u2227 X (\u00acPedestrianDetected)))",
+        "response_time": 1.2138590812683105,
+        "tokens_used": 186,
+        "error": null
+      },
+      "openai_finetuned": {
+        "atl_formula": "<<vehicle_fleet>> G(pedestrian_detected_within_10m -> F(complete_stop_before_reaching_pedestrian))",
+        "response_time": 4.333071231842041,
+        "tokens_used": 182,
+        "error": null
+      },
+      "claude": {
+        "atl_formula": "",
+        "response_time": 0.31496286392211914,
+        "tokens_used": 0,
+        "error": "Error code: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-5-sonnet-20241022'}, 'request_id': 'req_011CVqUbepXomVkc2qgXcq6J'}"
+      }
+    },
+    "timestamp": "2025-12-06T17:01:14.459645"
+  },
+  {
+    "sample_id": "sample_004",
+    "nl_statement": "In a healthcare setting, the emergency response team must ensure that for every patient admitted to the emergency room, critical diagnostic tests are performed within 30 minutes and that the results are delivered to the attending physician within 15 minutes after the tests are completed, ensuring patient care is prioritized at all times.",
+    "nl_generator": "openai",
+    "translations": {
+      "openai_base": {
+        "atl_formula": "\u27e8\u27e8ERT\u27e9\u27e9 G (PatientAdmitted \u2192 (F (CriticalTestsPerformed \u2227 X (F (ResultsDelivered \u2227 G PatientCarePrioritized)) U (TimeElapsed \u2264 30))))",
+        "response_time": 1.6310539245605469,
+        "tokens_used": 212,
+        "error": null
+      },
+      "openai_finetuned": {
+        "atl_formula": "<<emergency_response_team>> G(patient_admitted -> (F(critical_tests_performed_within_30min) & F(results_delivered_to_physician_within_15min)))",
+        "response_time": 2.3649919033050537,
+        "tokens_used": 201,
+        "error": null
+      },
+      "claude": {
+        "atl_formula": "",
+        "response_time": 0.2992868423461914,
+        "tokens_used": 0,
+        "error": "Error code: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-5-sonnet-20241022'}, 'request_id': 'req_011CVqUbyQEJaMAypeNSLqaX'}"
+      }
+    },
+    "timestamp": "2025-12-06T17:01:18.789780"
+  },
+  {
+    "sample_id": "sample_005",
+    "nl_statement": "In a smart home environment, the security system must ensure that the front door remains locked at all times (always) when the homeowner is away, and it must send a notification to the homeowner's mobile device if the door is unlocked (eventually) until the homeowner returns.",
+    "nl_generator": "openai",
+    "translations": {
+      "openai_base": {
+        "atl_formula": "\u27e8\u27e8Homeowner\u27e9\u27e9 G (Away \u2192 Locked) \u2227 \u27e8\u27e8SecuritySystem\u27e9\u27e9 F (\u00acLocked \u2227 X(Away) U (\u00acAway))",
+        "response_time": 1.506911039352417,
+        "tokens_used": 210,
+        "error": null
+      },
+      "openai_finetuned": {
+        "atl_formula": "<<security_system>> G(homeowner_away -> G(door_locked)) & <<security_system>> G(door_unlocked -> F(notification_sent))",
+        "response_time": 2.5163919925689697,
+        "tokens_used": 189,
+        "error": null
+      },
+      "claude": {
+        "atl_formula": "",
+        "response_time": 0.2807760238647461,
+        "tokens_used": 0,
+        "error": "Error code: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-5-sonnet-20241022'}, 'request_id': 'req_011CVqUcHzRkbDJLdULkoM7P'}"
+      }
+    },
+    "timestamp": "2025-12-06T17:01:23.132195"
+  },
+  {
+    "sample_id": "sample_006",
+    "nl_statement": "In a smart home environment, the coalition of security agents must ensure that the home's security system is always armed when the last resident leaves the premises, and it must notify the homeowner via their mobile device within five minutes of any unauthorized entry detected while the system is armed.",
+    "nl_generator": "openai",
+    "translations": {
+      "openai_base": {
+        "atl_formula": "\u27e8\u27e8security agents\u27e9\u27e9(G(lastResidentLeaves \u2192 (armed \u2227 F(\u00acarmed \u2227 unauthorizedEntry \u2192 X(\u00acnotified)))) \u2227 F(unauthorizedEntry \u2227 armed \u2192 X(notified)))",
+        "response_time": 1.926590919494629,
+        "tokens_used": 211,
+        "error": null
+      },
+      "openai_finetuned": {
+        "atl_formula": "<<security_agents>> G(last_resident_leaves -> X(security_system_armed)) & <<security_agents>> G((unauthorized_entry_detected & security_system_armed) -> F(homeowner_notified))",
+        "response_time": 2.093522071838379,
+        "tokens_used": 200,
+        "error": null
+      },
+      "claude": {
+        "atl_formula": "",
+        "response_time": 0.27890682220458984,
+        "tokens_used": 0,
+        "error": "Error code: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-5-sonnet-20241022'}, 'request_id': 'req_011CVqUccSgTHSJFLQTjFy5s'}"
+      }
+    },
+    "timestamp": "2025-12-06T17:01:27.456545"
+  },
+  {
+    "sample_id": "sample_007",
+    "nl_statement": "In a smart home environment, the coalition of the security system and the lighting control agent must ensure that whenever the home is occupied, adaptive lighting is activated within 5 seconds, and this lighting state must be maintained continuously until the occupants leave the premises.",
+    "nl_generator": "openai",
+    "translations": {
+      "openai_base": {
+        "atl_formula": "\u27e8\u27e8SecuritySystem, LightingControl\u27e9\u27e9 G (Occupied \u2192 F (AdaptiveLighting \u2227 G (Occupied \u2192 X (AdaptiveLighting \u2227 G \u00acOccupied))))",
+        "response_time": 1.6291358470916748,
+        "tokens_used": 196,
+        "error": null
+      },
+      "openai_finetuned": {
+        "atl_formula": "<<security_system, lighting_control_agent>> G(home_occupied -> F(adaptive_lighting_activated & (adaptive_lighting_activated U !home_occupied)))",
+        "response_time": 8.19277310371399,
+        "tokens_used": 187,
+        "error": null
+      },
+      "claude": {
+        "atl_formula": "",
+        "response_time": 0.3173999786376953,
+        "tokens_used": 0,
+        "error": "Error code: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-5-sonnet-20241022'}, 'request_id': 'req_011CVqUdMqPDt2XtZrQ4vNGS'}"
+      }
+    },
+    "timestamp": "2025-12-06T17:01:37.628060"
+  },
+  {
+    "sample_id": "sample_008",
+    "nl_statement": "In the context of a smart home environment, the coalition of security agents must ensure that the home\u2019s security system always activates within 5 seconds after detecting any unauthorized access event.",
+    "nl_generator": "openai",
+    "translations": {
+      "openai_base": {
+        "atl_formula": "\u27e8\u27e8security agents\u27e9\u27e9 G (unauthorized_access_event \u2192 F[0,5] security_system_activated)",
+        "response_time": 1.1271331310272217,
+        "tokens_used": 171,
+        "error": null
+      },
+      "openai_finetuned": {
+        "atl_formula": "<<security_agents>> G(unauthorized_access_detected -> F(security_system_activated))",
+        "response_time": 9.220719814300537,
+        "tokens_used": 158,
+        "error": null
+      },
+      "claude": {
+        "atl_formula": "",
+        "response_time": 0.3113698959350586,
+        "tokens_used": 0,
+        "error": "Error code: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-5-sonnet-20241022'}, 'request_id': 'req_011CVqUe9XjpzLcGsy1Kw6tE'}"
+      }
+    },
+    "timestamp": "2025-12-06T17:01:48.320517"
+  },
+  {
+    "sample_id": "sample_009",
+    "nl_statement": "In the context of an autonomous vehicle coalition, each vehicle must ensure that it will always maintain a safe distance from the vehicle in front of it while traveling on a highway, such that if any vehicle detects a sudden decrease in speed, it will eventually initiate braking within two seconds to prevent a collision.",
+    "nl_generator": "openai",
+    "translations": {
+      "openai_base": {
+        "atl_formula": "\u27e8\u27e8V\u27e9\u27e9 G (safe_distance \u2227 (detects_decrease \u2192 F (initiate_braking U (time \u2264 2))))",
+        "response_time": 1.1838209629058838,
+        "tokens_used": 201,
+        "error": null
+      },
+      "openai_finetuned": {
+        "atl_formula": "<<vehicle_coalition>> G((safe_distance & (sudden_decrease_speed -> F(initiate_braking))) U !collision)",
+        "response_time": 2.398698329925537,
+        "tokens_used": 192,
+        "error": null
+      },
+      "claude": {
+        "atl_formula": "",
+        "response_time": 0.29490089416503906,
+        "tokens_used": 0,
+        "error": "Error code: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-5-sonnet-20241022'}, 'request_id': 'req_011CVqUeSP1PvAkwaMH4QQUK'}"
+      }
+    },
+    "timestamp": "2025-12-06T17:01:52.227612"
+  },
+  {
+    "sample_id": "sample_010",
+    "nl_statement": "In a smart home environment, the coalition of the security system and smart lighting agents must guarantee that whenever a breach is detected, the lights will turn on within 5 seconds and remain illuminated until the breach is resolved.",
+    "nl_generator": "openai",
+    "translations": {
+      "openai_base": {
+        "atl_formula": "\u27e8\u27e8SecuritySystem, SmartLighting\u27e9\u27e9 G (BreachDetected \u2192 F (LightsOn \u2227 G (\u00acBreachDetected \u2192 LightsOff))) U (BreachResolved)",
+        "response_time": 1.3334550857543945,
+        "tokens_used": 192,
+        "error": null
+      },
+      "openai_finetuned": {
+        "atl_formula": "<<security_system, smart_lighting>> G(breach_detected -> F(lights_on U breach_resolved))",
+        "response_time": 0.7887091636657715,
+        "tokens_used": 170,
+        "error": null
+      },
+      "claude": {
+        "atl_formula": "",
+        "response_time": 0.3280010223388672,
+        "tokens_used": 0,
+        "error": "Error code: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-5-sonnet-20241022'}, 'request_id': 'req_011CVqUecp4gJpFgbqbNYCoz'}"
+      }
+    },
+    "timestamp": "2025-12-06T17:01:54.703717"
+  },
+  {
+    "sample_id": "sample_011",
+    "nl_statement": "In the context of a smart home environment, the coalition of the security system and the energy management system must ensure that whenever a resident is detected entering the home, the security system will always activate within the next 5 seconds, ensuring that surveillance is continuously operational while the resident is present.",
+    "nl_generator": "openai",
+    "translations": {
+      "openai_base": {
+        "atl_formula": "\u27e8\u27e8SecuritySystem, EnergyManagementSystem\u27e9\u27e9(G(ResidentDetected \u2192 F[0,5](Activate(SecuritySystem)) \u2227 G(ResidentPresent \u2192 SurveillanceOperational)) )",
+        "response_time": 1.874255657196045,
+        "tokens_used": 206,
+        "error": null
+      },
+      "openai_finetuned": {
+        "atl_formula": "<<security_system, energy_management_system>> G(resident_detected -> F(security_activated & surveillance_operational))",
+        "response_time": 2.42866587638855,
+        "tokens_used": 185,
+        "error": null
+      },
+      "claude": {
+        "atl_formula": "",
+        "response_time": 0.28479599952697754,
+        "tokens_used": 0,
+        "error": "Error code: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-5-sonnet-20241022'}, 'request_id': 'req_011CVqUexg9zTeso2JJFs41Z'}"
+      }
+    },
+    "timestamp": "2025-12-06T17:01:59.319567"
+  },
+  {
+    "sample_id": "sample_012",
+    "nl_statement": "In a smart home environment, the coalition of the security system and the smart lighting agents must ensure that if a security breach is detected, then the lights will turn on within five seconds and remain on until the breach is resolved.",
+    "nl_generator": "openai",
+    "translations": {
+      "openai_base": {
+        "atl_formula": "\u27e8\u27e8security\\_system, smart\\_lighting\u27e9\u27e9(G(breach\\_detected \u2192 F(lights\\_on \u2227 G(lights\\_on))) \u2227 G(lights\\_on \u2192 X(lights\\_on U breach\\_resolved)))",
+        "response_time": 2.3830180168151855,
+        "tokens_used": 215,
+        "error": null
+      },
+      "openai_finetuned": {
+        "atl_formula": "<<security_system, smart_lighting>> G(security_breach_detected -> F(lights_on & (lights_on U breach_resolved)))",
+        "response_time": 6.988293170928955,
+        "tokens_used": 178,
+        "error": null
+      },
+      "claude": {
+        "atl_formula": "",
+        "response_time": 0.2949187755584717,
+        "tokens_used": 0,
+        "error": "Error code: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-5-sonnet-20241022'}, 'request_id': 'req_011CVqUfg53xV7HGPGEM4UqY'}"
+      }
+    },
+    "timestamp": "2025-12-06T17:02:09.012922"
+  }
+]

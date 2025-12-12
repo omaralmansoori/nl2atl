@@ -70,9 +70,9 @@ venv.bak/
 Thumbs.db
 
 # Generated data files
-data/
-*.jsonl
-*.csv
+# data/
+# *.jsonl
+# *.csv
 
 # Local config
 .env.local

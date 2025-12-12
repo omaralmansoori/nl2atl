@@ -1,0 +1,1902 @@
+{
+  "version": "1.0",
+  "generated_at": "2025-11-28T23:07:22.523908",
+  "samples": [
+    {
+      "id": "3b9ede5582c2",
+      "nl_statement": "“The drone controller must always prevent collisions”",
+      "atl_formula": "<<DroneController>> G(no_collision)",
+      "atl_unicode": "⟨⟨DroneController⟩⟩ G(no_collision)",
+      "domain": "autonomous_systems",
+      "source_file": "sample 1.txt",
+      "agents": [
+        "DroneController"
+      ],
+      "operators": [
+        "G"
+      ],
+      "atoms": [
+        "no_collision"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.355014"
+    },
+    {
+      "id": "edde816df66c",
+      "nl_statement": "“The navigation module must ensure every deviation is eventually corrected”",
+      "atl_formula": "<<Navigation>> G(deviation -> F(corrected))",
+      "atl_unicode": "⟨⟨Navigation⟩⟩ G(deviation → F(corrected))",
+      "domain": "autonomous_systems",
+      "source_file": "sample 1.txt",
+      "agents": [
+        "Navigation"
+      ],
+      "operators": [
+        "G",
+        "F",
+        "->"
+      ],
+      "atoms": [
+        "corrected",
+        "deviation"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.355116"
+    },
+    {
+      "id": "c440f33222ec",
+      "nl_statement": "“The safety monitor must guarantee that no unsafe state is ever reached”",
+      "atl_formula": "<<SafetyMonitor>> G(!unsafe_state)",
+      "atl_unicode": "⟨⟨SafetyMonitor⟩⟩ G(¬unsafe_state)",
+      "domain": "safety_critical",
+      "source_file": "sample 1.txt",
+      "agents": [
+        "SafetyMonitor"
+      ],
+      "operators": [
+        "G"
+      ],
+      "atoms": [
+        "unsafe_state"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.355173"
+    },
+    {
+      "id": "ab9a941b83be",
+      "nl_statement": "“The autopilot must ensure the aircraft eventually stabilizes after turbulence”",
+      "atl_formula": "<<Autopilot>> F(stable)",
+      "atl_unicode": "⟨⟨Autopilot⟩⟩ F(stable)",
+      "domain": "aerospace",
+      "source_file": "sample 1.txt",
+      "agents": [
+        "Autopilot"
+      ],
+      "operators": [
+        "F"
+      ],
+      "atoms": [
+        "stable"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.355242"
+    },
+    {
+      "id": "676e6e9ae38c",
+      "nl_statement": "“The cooling system must maintain temperature within limits at all times”",
+      "atl_formula": "<<CoolingSystem>> G(temp_within_limits)",
+      "atl_unicode": "⟨⟨CoolingSystem⟩⟩ G(temp_within_limits)",
+      "domain": "industrial_control",
+      "source_file": "sample 1.txt",
+      "agents": [
+        "CoolingSystem"
+      ],
+      "operators": [
+        "G"
+      ],
+      "atoms": [
+        "temp_within_limits"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.355299"
+    },
+    {
+      "id": "63336afaeb63",
+      "nl_statement": "“The robot arm controller must ensure that overload triggers an emergency stop”",
+      "atl_formula": "<<RobotArmController>> G(overload -> F(emergency_stop))",
+      "atl_unicode": "⟨⟨RobotArmController⟩⟩ G(overload → F(emergency_stop))",
+      "domain": "autonomous_systems",
+      "source_file": "sample 1.txt",
+      "agents": [
+        "RobotArmController"
+      ],
+      "operators": [
+        "G",
+        "F",
+        "->"
+      ],
+      "atoms": [
+        "overload",
+        "emergency_stop"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.355361"
+    },
+    {
+      "id": "9fc847d11ea0",
+      "nl_statement": "“The braking system must keep vehicle speed safe continually”",
+      "atl_formula": "<<BrakingSystem>> G(safe_speed)",
+      "atl_unicode": "⟨⟨BrakingSystem⟩⟩ G(safe_speed)",
+      "domain": "transportation",
+      "source_file": "sample 1.txt",
+      "agents": [
+        "BrakingSystem"
+      ],
+      "operators": [
+        "G"
+      ],
+      "atoms": [
+        "safe_speed"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.355407"
+    },
+    {
+      "id": "cec575f804b0",
+      "nl_statement": "“The hazard detector must ensure that if smoke appears, an alarm is triggered”",
+      "atl_formula": "<<HazardDetector>> G(smoke -> F(alarm))",
+      "atl_unicode": "⟨⟨HazardDetector⟩⟩ G(smoke → F(alarm))",
+      "domain": "safety_critical",
+      "source_file": "sample 1.txt",
+      "agents": [
+        "HazardDetector"
+      ],
+      "operators": [
+        "G",
+        "F",
+        "->"
+      ],
+      "atoms": [
+        "smoke",
+        "alarm"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.355491"
+    },
+    {
+      "id": "7bda83c6c8f5",
+      "nl_statement": "“The stabilizer unit must maintain balance under all conditions”",
+      "atl_formula": "<<Stabilizer>> G(balanced)",
+      "atl_unicode": "⟨⟨Stabilizer⟩⟩ G(balanced)",
+      "domain": "aerospace",
+      "source_file": "sample 1.txt",
+      "agents": [
+        "Stabilizer"
+      ],
+      "operators": [
+        "G"
+      ],
+      "atoms": [
+        "balanced"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.355541"
+    },
+    {
+      "id": "443767352caa",
+      "nl_statement": "“The power controller must eventually restore power after a temporary outage”",
+      "atl_formula": "<<PowerController>> outage -> F(restored)",
+      "atl_unicode": "⟨⟨PowerController⟩⟩ outage → F(restored)",
+      "domain": "industrial_control",
+      "source_file": "sample 1.txt",
+      "agents": [
+        "PowerController"
+      ],
+      "operators": [
+        "F",
+        "->"
+      ],
+      "atoms": [
+        "outage",
+        "restored"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.355630"
+    },
+    {
+      "id": "a8c32be690b5",
+      "nl_statement": "“All replicas must maintain consistency across operations”",
+      "atl_formula": "<<ReplicaNodes>> G(consistency)",
+      "atl_unicode": "⟨⟨ReplicaNodes⟩⟩ G(consistency)",
+      "domain": "distributed_systems",
+      "source_file": "sample 1.txt",
+      "agents": [
+        "ReplicaNodes"
+      ],
+      "operators": [
+        "G"
+      ],
+      "atoms": [
+        "consistency"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.355686"
+    },
+    {
+      "id": "398318ff037c",
+      "nl_statement": "“The leader node must ensure every request eventually receives consensus”",
+      "atl_formula": "<<Leader>> G(request -> F(consensus))",
+      "atl_unicode": "⟨⟨Leader⟩⟩ G(request → F(consensus))",
+      "domain": "distributed_systems",
+      "source_file": "sample 1.txt",
+      "agents": [
+        "Leader"
+      ],
+      "operators": [
+        "G",
+        "F",
+        "->"
+      ],
+      "atoms": [
+        "consensus",
+        "request"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.355758"
+    },
+    {
+      "id": "2ff14e5b971e",
+      "nl_statement": "“The cluster managers must ensure load is balanced eventually when overloaded”",
+      "atl_formula": "<<ClusterManagers>> G(overload -> F(balanced))",
+      "atl_unicode": "⟨⟨ClusterManagers⟩⟩ G(overload → F(balanced))",
+      "domain": "distributed_systems",
+      "source_file": "sample 1.txt",
+      "agents": [
+        "ClusterManagers"
+      ],
+      "operators": [
+        "G",
+        "F",
+        "->"
+      ],
+      "atoms": [
+        "balanced",
+        "overload"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.355845"
+    },
+    {
+      "id": "75f05a168941",
+      "nl_statement": "“The scheduler must guarantee that queued tasks eventually execute”",
+      "atl_formula": "<<Scheduler>> G(task_in_queue -> F(executed))",
+      "atl_unicode": "⟨⟨Scheduler⟩⟩ G(task_in_queue → F(executed))",
+      "domain": "distributed_systems",
+      "source_file": "sample 1.txt",
+      "agents": [
+        "Scheduler"
+      ],
+      "operators": [
+        "G",
+        "F",
+        "->"
+      ],
+      "atoms": [
+        "executed",
+        "task_in_queue"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.355906"
+    },
+    {
+      "id": "4dbc74167b34",
+      "nl_statement": "“The orchestrator must ensure all services eventually become reachable after deployment”",
+      "atl_formula": "<<Orchestrator>> F(all_services_reachable)",
+      "atl_unicode": "⟨⟨Orchestrator⟩⟩ F(all_services_reachable)",
+      "domain": "distributed_systems",
+      "source_file": "sample 1.txt",
+      "agents": [
+        "Orchestrator"
+      ],
+      "operators": [
+        "F"
+      ],
+      "atoms": [
+        "all_services_reachable"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.355961"
+    },
+    {
+      "id": "afbf046fc529",
+      "nl_statement": "“The distributed monitor must always detect node failures”",
+      "atl_formula": "<<DistMonitor>> G(node_fail -> F(detected))",
+      "atl_unicode": "⟨⟨DistMonitor⟩⟩ G(node_fail → F(detected))",
+      "domain": "distributed_systems",
+      "source_file": "sample 1.txt",
+      "agents": [
+        "DistMonitor"
+      ],
+      "operators": [
+        "G",
+        "F",
+        "->"
+      ],
+      "atoms": [
+        "node_fail",
+        "detected"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.356030"
+    },
+    {
+      "id": "6d39f20b6067",
+      "nl_statement": "“The consensus group must ensure no conflicting decisions occur”",
+      "atl_formula": "<<ConsensusGroup>> G(!conflict)",
+      "atl_unicode": "⟨⟨ConsensusGroup⟩⟩ G(¬conflict)",
+      "domain": "distributed_systems",
+      "source_file": "sample 1.txt",
+      "agents": [
+        "ConsensusGroup"
+      ],
+      "operators": [
+        "G"
+      ],
+      "atoms": [
+        "conflict"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.356080"
+    },
+    {
+      "id": "042706cc58b1",
+      "nl_statement": "“The membership service must eventually update the cluster view after joins/leaves”",
+      "atl_formula": "<<MembershipService>> G(change -> F(view_updated))",
+      "atl_unicode": "⟨⟨MembershipService⟩⟩ G(change → F(view_updated))",
+      "domain": "distributed_systems",
+      "source_file": "sample 1.txt",
+      "agents": [
+        "MembershipService"
+      ],
+      "operators": [
+        "G",
+        "F",
+        "->"
+      ],
+      "atoms": [
+        "change",
+        "view_updated"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.356133"
+    },
+    {
+      "id": "c1c6126bb000",
+      "nl_statement": "“The replication controller must ensure updates eventually propagate to all nodes”",
+      "atl_formula": "<<ReplicationController>> G(update -> F(propagated))",
+      "atl_unicode": "⟨⟨ReplicationController⟩⟩ G(update → F(propagated))",
+      "domain": "distributed_systems",
+      "source_file": "sample 1.txt",
+      "agents": [
+        "ReplicationController"
+      ],
+      "operators": [
+        "G",
+        "F",
+        "->"
+      ],
+      "atoms": [
+        "propagated",
+        "update"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.356185"
+    },
+    {
+      "id": "364ac60137a5",
+      "nl_statement": "“The checkpoint service must always maintain a valid recovery point”",
+      "atl_formula": "<<CheckpointService>> G(valid_checkpoint)",
+      "atl_unicode": "⟨⟨CheckpointService⟩⟩ G(valid_checkpoint)",
+      "domain": "distributed_systems",
+      "source_file": "sample 1.txt",
+      "agents": [
+        "CheckpointService"
+      ],
+      "operators": [
+        "G"
+      ],
+      "atoms": [
+        "valid_checkpoint"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.356231"
+    },
+    {
+      "id": "bb7d01a767c2",
+      "nl_statement": "“X will eventually force B to happen.”",
+      "atl_formula": "<<X>> F B",
+      "atl_unicode": "⟨⟨X⟩⟩ F B",
+      "domain": "generic",
+      "source_file": "sample 2.txt",
+      "agents": [
+        "X"
+      ],
+      "operators": [
+        "F",
+        "X"
+      ],
+      "atoms": [
+        "B"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.356594"
+    },
+    {
+      "id": "aa2223ded623",
+      "nl_statement": "“X will ensure that C never becomes true.”",
+      "atl_formula": "<<X>> G !C",
+      "atl_unicode": "⟨⟨X⟩⟩ G ¬C",
+      "domain": "generic",
+      "source_file": "sample 2.txt",
+      "agents": [
+        "X"
+      ],
+      "operators": [
+        "G",
+        "X"
+      ],
+      "atoms": [
+        "C"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.356639"
+    },
+    {
+      "id": "275ccd8169d0",
+      "nl_statement": "“X will ensure that once A becomes true, it stays true forever.”",
+      "atl_formula": "<<X>> G (A -> G A)",
+      "atl_unicode": "⟨⟨X⟩⟩ G (A → G A)",
+      "domain": "generic",
+      "source_file": "sample 2.txt",
+      "agents": [
+        "X"
+      ],
+      "operators": [
+        "G",
+        "X",
+        "->"
+      ],
+      "atoms": [
+        "A"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.356686"
+    },
+    {
+      "id": "7afd8682810e",
+      "nl_statement": "“X will ensure that B is always true.”",
+      "atl_formula": "<<X>> G B",
+      "atl_unicode": "⟨⟨X⟩⟩ G B",
+      "domain": "generic",
+      "source_file": "sample 2.txt",
+      "agents": [
+        "X"
+      ],
+      "operators": [
+        "G",
+        "X"
+      ],
+      "atoms": [
+        "B"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.356723"
+    },
+    {
+      "id": "632344a22db5",
+      "nl_statement": "“X will ensure that B will eventually become false and stay false forever.”",
+      "atl_formula": "<<X>> F (!B & G !B)",
+      "atl_unicode": "⟨⟨X⟩⟩ F (¬B ∧ G ¬B)",
+      "domain": "generic",
+      "source_file": "sample 2.txt",
+      "agents": [
+        "X"
+      ],
+      "operators": [
+        "G",
+        "F",
+        "X"
+      ],
+      "atoms": [
+        "B"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.356769"
+    },
+    {
+      "id": "653fe385cc13",
+      "nl_statement": "“X will ensure that once becomes false it stays false forever.”",
+      "atl_formula": "<<X>> G (!B -> G !B)",
+      "atl_unicode": "⟨⟨X⟩⟩ G (¬B → G ¬B)",
+      "domain": "generic",
+      "source_file": "sample 2.txt",
+      "agents": [
+        "X"
+      ],
+      "operators": [
+        "G",
+        "X",
+        "->"
+      ],
+      "atoms": [
+        "B"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.356814"
+    },
+    {
+      "id": "80ea535584da",
+      "nl_statement": "“X will ensure that once D becomes false, it will eventually become true again.”",
+      "atl_formula": "<<X>> G (!D -> F D)",
+      "atl_unicode": "⟨⟨X⟩⟩ G (¬D → F D)",
+      "domain": "generic",
+      "source_file": "sample 2.txt",
+      "agents": [
+        "X"
+      ],
+      "operators": [
+        "G",
+        "F",
+        "X",
+        "->"
+      ],
+      "atoms": [
+        "D"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.356860"
+    },
+    {
+      "id": "6716134eb78a",
+      "nl_statement": "“X will ensure that C will always eventually stop being true.”",
+      "atl_formula": "<<X>> G F !C",
+      "atl_unicode": "⟨⟨X⟩⟩ G F ¬C",
+      "domain": "generic",
+      "source_file": "sample 2.txt",
+      "agents": [
+        "X"
+      ],
+      "operators": [
+        "G",
+        "F",
+        "X"
+      ],
+      "atoms": [
+        "C"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.356900"
+    },
+    {
+      "id": "c8d8df4bcb3a",
+      "nl_statement": "“X will ensure that B will eventually become true and stay true forever.”",
+      "atl_formula": "<<X>> F (B & G B)",
+      "atl_unicode": "⟨⟨X⟩⟩ F (B ∧ G B)",
+      "domain": "generic",
+      "source_file": "sample 2.txt",
+      "agents": [
+        "X"
+      ],
+      "operators": [
+        "G",
+        "F",
+        "X"
+      ],
+      "atoms": [
+        "B"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.356943"
+    },
+    {
+      "id": "f696c6d53a8a",
+      "nl_statement": "“X will ensure that A and C are never true at the same time.”",
+      "atl_formula": "<<X>> G !(A & C)",
+      "atl_unicode": "⟨⟨X⟩⟩ G ¬(A ∧ C)",
+      "domain": "generic",
+      "source_file": "sample 2.txt",
+      "agents": [
+        "X"
+      ],
+      "operators": [
+        "G",
+        "X"
+      ],
+      "atoms": [
+        "A",
+        "C"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.356986"
+    },
+    {
+      "id": "0b7717c2ec29",
+      "nl_statement": "“X will ensure that whenever D becomes true, B will eventually become true after it.”",
+      "atl_formula": "<<X>> G (D -> F B)",
+      "atl_unicode": "⟨⟨X⟩⟩ G (D → F B)",
+      "domain": "generic",
+      "source_file": "sample 2.txt",
+      "agents": [
+        "X"
+      ],
+      "operators": [
+        "G",
+        "F",
+        "X",
+        "->"
+      ],
+      "atoms": [
+        "D",
+        "B"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.357031"
+    },
+    {
+      "id": "b24d3d79e949",
+      "nl_statement": "“X will ensure that A happens at least once, but B never happens.”",
+      "atl_formula": "<<X>> (F A & G !B)",
+      "atl_unicode": "⟨⟨X⟩⟩ (F A ∧ G ¬B)",
+      "domain": "generic",
+      "source_file": "sample 2.txt",
+      "agents": [
+        "X"
+      ],
+      "operators": [
+        "G",
+        "F",
+        "X"
+      ],
+      "atoms": [
+        "A",
+        "B"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.357074"
+    },
+    {
+      "id": "039092e9ca54",
+      "nl_statement": "“X will ensure that A will remain false until D becomes true.”",
+      "atl_formula": "<<X>> (!A U D)",
+      "atl_unicode": "⟨⟨X⟩⟩ (¬A U D)",
+      "domain": "generic",
+      "source_file": "sample 2.txt",
+      "agents": [
+        "X"
+      ],
+      "operators": [
+        "X",
+        "U"
+      ],
+      "atoms": [
+        "D",
+        "A"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.357115"
+    },
+    {
+      "id": "37ac6352d763",
+      "nl_statement": "“X will ensure that eventually both C and D are true at the same time.”",
+      "atl_formula": "<<X>> F (C & D)",
+      "atl_unicode": "⟨⟨X⟩⟩ F (C ∧ D)",
+      "domain": "generic",
+      "source_file": "sample 2.txt",
+      "agents": [
+        "X"
+      ],
+      "operators": [
+        "F",
+        "X"
+      ],
+      "atoms": [
+        "D",
+        "C"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.357157"
+    },
+    {
+      "id": "17b75625cc0a",
+      "nl_statement": "“X will ensure that both C and D are never true at the same time.”",
+      "atl_formula": "<<X>> G !(C & D)",
+      "atl_unicode": "⟨⟨X⟩⟩ G ¬(C ∧ D)",
+      "domain": "generic",
+      "source_file": "sample 2.txt",
+      "agents": [
+        "X"
+      ],
+      "operators": [
+        "G",
+        "X"
+      ],
+      "atoms": [
+        "D",
+        "C"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.357199"
+    },
+    {
+      "id": "0d7fea1f4233",
+      "nl_statement": "“X will ensure that if A is ever true, then B will eventually become.”",
+      "atl_formula": "<<X>> G (A -> F !B)",
+      "atl_unicode": "⟨⟨X⟩⟩ G (A → F ¬B)",
+      "domain": "generic",
+      "source_file": "sample 2.txt",
+      "agents": [
+        "X"
+      ],
+      "operators": [
+        "G",
+        "F",
+        "X",
+        "->"
+      ],
+      "atoms": [
+        "A",
+        "B"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.357242"
+    },
+    {
+      "id": "01c1bfb8d6e9",
+      "nl_statement": "“X will ensure that neither A nor C ever becomes true.”",
+      "atl_formula": "<<X>> G (!A & !C)",
+      "atl_unicode": "⟨⟨X⟩⟩ G (¬A ∧ ¬C)",
+      "domain": "generic",
+      "source_file": "sample 2.txt",
+      "agents": [
+        "X"
+      ],
+      "operators": [
+        "G",
+        "X"
+      ],
+      "atoms": [
+        "A",
+        "C"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.357284"
+    },
+    {
+      "id": "a90ed110a833",
+      "nl_statement": "“X will ensure that eventually A or B becomes permanently true.”",
+      "atl_formula": "<<X>> F (G A | G B)",
+      "atl_unicode": "⟨⟨X⟩⟩ F (G A ∨ G B)",
+      "domain": "generic",
+      "source_file": "sample 2.txt",
+      "agents": [
+        "X"
+      ],
+      "operators": [
+        "G",
+        "F",
+        "X"
+      ],
+      "atoms": [
+        "A",
+        "B"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.357326"
+    },
+    {
+      "id": "41c8b6fb0928",
+      "nl_statement": "“X will ensure that B eventually becomes true and remains true until C becomes false.”",
+      "atl_formula": "<<X>> (F B & (B U !C))",
+      "atl_unicode": "⟨⟨X⟩⟩ (F B ∧ (B U ¬C))",
+      "domain": "generic",
+      "source_file": "sample 2.txt",
+      "agents": [
+        "X"
+      ],
+      "operators": [
+        "F",
+        "X",
+        "U"
+      ],
+      "atoms": [
+        "C",
+        "B"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.357373"
+    },
+    {
+      "id": "201372467479",
+      "nl_statement": "“X will ensure that once C becomes true, D will eventually become false, and after that D will stay false forever.”",
+      "atl_formula": "<<X>> G (C -> F (!D & G !D))",
+      "atl_unicode": "⟨⟨X⟩⟩ G (C → F (¬D ∧ G ¬D))",
+      "domain": "generic",
+      "source_file": "sample 2.txt",
+      "agents": [
+        "X"
+      ],
+      "operators": [
+        "G",
+        "F",
+        "X",
+        "->"
+      ],
+      "atoms": [
+        "D",
+        "C"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.357424"
+    },
+    {
+      "id": "02383ce2ae4d",
+      "nl_statement": "A user must not access a resource until authentication succeeds.",
+      "atl_formula": "<<system>> G (!authentication -> !access)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬authentication → ¬access)",
+      "domain": "access_control",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "access",
+        "authentication"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.357723"
+    },
+    {
+      "id": "ce9b64161588",
+      "nl_statement": "A process must not modify a file after the file has been locked.",
+      "atl_formula": "<<system>> G (locked -> !modify)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (locked → ¬modify)",
+      "domain": "data_management",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "locked",
+        "modify"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.357769"
+    },
+    {
+      "id": "f380ae77d782",
+      "nl_statement": "A module must not update its configuration while it is in a failed state.",
+      "atl_formula": "<<system>> G (failed -> !updateConfig)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (failed → ¬updateConfig)",
+      "domain": "safety_critical",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "failed",
+        "updateConfig"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.357815"
+    },
+    {
+      "id": "cab5374e0c28",
+      "nl_statement": "A session must not perform any action until the user identity is verified.",
+      "atl_formula": "<<system>> G (!verified -> !action)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬verified → ¬action)",
+      "domain": "access_control",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "action",
+        "verified"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.357859"
+    },
+    {
+      "id": "cb021daab89f",
+      "nl_statement": "A user must not change permissions after the request has been revoked.",
+      "atl_formula": "<<system>> G (revoked -> !changePermission)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (revoked → ¬changePermission)",
+      "domain": "access_control",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "changePermission",
+        "revoked"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.357904"
+    },
+    {
+      "id": "e3a8f83bef16",
+      "nl_statement": "A resource must not be deleted while it is being accessed by another process.",
+      "atl_formula": "<<system>> G (accessed -> !delete)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (accessed → ¬delete)",
+      "domain": "access_control",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "delete",
+        "accessed"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.357948"
+    },
+    {
+      "id": "7fe575443b9d",
+      "nl_statement": "A process must not write to a log file unless write access is granted.",
+      "atl_formula": "<<system>> G (!granted -> !writeLog)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬granted → ¬writeLog)",
+      "domain": "data_management",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "granted",
+        "writeLog"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.357991"
+    },
+    {
+      "id": "15240466e6c1",
+      "nl_statement": "A user must not view confidential data without an active authorization token.",
+      "atl_formula": "<<system>> G (!token -> !view)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬token → ¬view)",
+      "domain": "access_control",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "view",
+        "token"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.358034"
+    },
+    {
+      "id": "80adb1ddfc91",
+      "nl_statement": "A worker process must not start a new task while it is still handling a previous task.",
+      "atl_formula": "<<system>> G (handlingTask -> !startTask)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (handlingTask → ¬startTask)",
+      "domain": "generic",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "handlingTask",
+        "startTask"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.358080"
+    },
+    {
+      "id": "d07fc32ffc75",
+      "nl_statement": "A controller must not assign a resource until the resource is marked available.",
+      "atl_formula": "<<system>> G (!available -> !assignResource)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬available → ¬assignResource)",
+      "domain": "autonomous_systems",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "assignResource",
+        "available"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.358127"
+    },
+    {
+      "id": "77e116e96501",
+      "nl_statement": "A service must not trigger an update after the update window has expired.",
+      "atl_formula": "<<system>> G (updateExpired -> !update)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (updateExpired → ¬update)",
+      "domain": "generic",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "update",
+        "updateExpired"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.358172"
+    },
+    {
+      "id": "6dcceb32cb73",
+      "nl_statement": "A file must not be opened for editing unless its checksum has been validated.",
+      "atl_formula": "<<system>> G (!checksumValidated -> !fileEdit)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬checksumValidated → ¬fileEdit)",
+      "domain": "data_management",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "checksumValidated",
+        "fileEdit"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.358231"
+    },
+    {
+      "id": "08c17e2d834f",
+      "nl_statement": "A module must not transition to “active” unless initialization has completed successfully.",
+      "atl_formula": "<<system>> G (!initCompleted -> !activeModule)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬initCompleted → ¬activeModule)",
+      "domain": "generic",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "initCompleted",
+        "activeModule"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.358305"
+    },
+    {
+      "id": "3cea80ed0dcf",
+      "nl_statement": "A user must not upload data while the system is in maintenance mode.",
+      "atl_formula": "<<system>> G (maintenance -> !upload)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (maintenance → ¬upload)",
+      "domain": "access_control",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "maintenance",
+        "upload"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.358687"
+    },
+    {
+      "id": "e25098088c8e",
+      "nl_statement": "A background job must not run unless the scheduler signals readiness.",
+      "atl_formula": "<<system>> G (!readySignal -> !jobRunning)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬readySignal → ¬jobRunning)",
+      "domain": "distributed_systems",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "jobRunning",
+        "readySignal"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.358755"
+    },
+    {
+      "id": "44a48afa2db1",
+      "nl_statement": "A request must not proceed if its integrity check fails.",
+      "atl_formula": "<<system>> G (checkFailed -> !requestProceed)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (checkFailed → ¬requestProceed)",
+      "domain": "safety_critical",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "requestProceed",
+        "checkFailed"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.358804"
+    },
+    {
+      "id": "0c03e41915aa",
+      "nl_statement": "A process must not execute privileged operations unless elevated rights are granted.",
+      "atl_formula": "<<system>> G (!rights -> !privilegedOperations)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬rights → ¬privilegedOperations)",
+      "domain": "access_control",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "privilegedOperations",
+        "rights"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.358873"
+    },
+    {
+      "id": "066cf5dd4430",
+      "nl_statement": "A session must not update user preferences before configuration data is loaded.",
+      "atl_formula": "<<system>> G (!configurationLoaded -> !updatePreference)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬configurationLoaded → ¬updatePreference)",
+      "domain": "access_control",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "updatePreference",
+        "configurationLoaded"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.358966"
+    },
+    {
+      "id": "a335e354a7bf",
+      "nl_statement": "A resource must not enter the “deleted” state unless all dependencies are released.",
+      "atl_formula": "<<system>> G (!dependenciesReleased -> !deletedState)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬dependenciesReleased → ¬deletedState)",
+      "domain": "generic",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "deletedState",
+        "dependenciesReleased"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.359039"
+    },
+    {
+      "id": "24070366a6bd",
+      "nl_statement": "A node must not send messages after it has been deactivated.",
+      "atl_formula": "<<system>> G (deactivated -> !sendMessages)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (deactivated → ¬sendMessages)",
+      "domain": "distributed_systems",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "sendMessages",
+        "deactivated"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.359089"
+    },
+    {
+      "id": "5e0dfd595a04",
+      "nl_statement": "A worker must not retry an operation until the cooldown period has expired.",
+      "atl_formula": "<<system>> G (!cooldownExpired -> !retryOperation)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬cooldownExpired → ¬retryOperation)",
+      "domain": "generic",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "retryOperation",
+        "cooldownExpired"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.359137"
+    },
+    {
+      "id": "416061ae015f",
+      "nl_statement": "A module must not log events unless the logging service is available.",
+      "atl_formula": "<<system>> G (!loggingAvailable -> !logEvent)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬loggingAvailable → ¬logEvent)",
+      "domain": "data_management",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "loggingAvailable",
+        "logEvent"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.359182"
+    },
+    {
+      "id": "ffb5a7b72e1e",
+      "nl_statement": "A transaction must not commit while any validation rule remains unsatisfied.",
+      "atl_formula": "<<system>> G (validationUnsatisfied -> !commit)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (validationUnsatisfied → ¬commit)",
+      "domain": "data_management",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "validationUnsatisfied",
+        "commit"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.359229"
+    },
+    {
+      "id": "afbdcfcb403a",
+      "nl_statement": "A user must not download files unless their access level matches the file’s classification.",
+      "atl_formula": "<<system>> G (!accessLevelAllowed -> !download)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬accessLevelAllowed → ¬download)",
+      "domain": "access_control",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "accessLevelAllowed",
+        "download"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.359280"
+    },
+    {
+      "id": "a984a6e5a3c4",
+      "nl_statement": "A process must not interact with a queue until the queue is initialized.",
+      "atl_formula": "<<system>> G (!queueInitialized -> !queueInteract)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬queueInitialized → ¬queueInteract)",
+      "domain": "generic",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "queueInteract",
+        "queueInitialized"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.359327"
+    },
+    {
+      "id": "fe2bbd835c22",
+      "nl_statement": "A service must not accept new requests while it is shutting down.",
+      "atl_formula": "<<system>> G (shuttingDown -> !acceptRequests)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (shuttingDown → ¬acceptRequests)",
+      "domain": "networking",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "shuttingDown",
+        "acceptRequests"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.359372"
+    },
+    {
+      "id": "faf2fb6d3bd3",
+      "nl_statement": "A user must not reset their password unless identity verification succeeds.",
+      "atl_formula": "<<system>> G (!identityVerified -> !resetPassword)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬identityVerified → ¬resetPassword)",
+      "domain": "access_control",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "resetPassword",
+        "identityVerified"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.359418"
+    },
+    {
+      "id": "b62f7c7c1773",
+      "nl_statement": "A component must not read configuration files before initialization completes.",
+      "atl_formula": "<<system>> G (!initialized -> !readConfig)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬initialized → ¬readConfig)",
+      "domain": "data_management",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "initialized",
+        "readConfig"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.359463"
+    },
+    {
+      "id": "3bdb339e5585",
+      "nl_statement": "A process must not access shared memory unless it holds the required lock.",
+      "atl_formula": "<<system>> G (!lockHeld -> !sharedMemoryAccess)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬lockHeld → ¬sharedMemoryAccess)",
+      "domain": "access_control",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "sharedMemoryAccess",
+        "lockHeld"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.359509"
+    },
+    {
+      "id": "59bb383fdf21",
+      "nl_statement": "A transaction must not roll back after results have been committed.",
+      "atl_formula": "<<system>> G (resultsCommitted -> !rollback)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (resultsCommitted → ¬rollback)",
+      "domain": "data_management",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "rollback",
+        "resultsCommitted"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.359554"
+    },
+    {
+      "id": "e1c78990d514",
+      "nl_statement": "A device must not send telemetry data unless connectivity is established.",
+      "atl_formula": "<<system>> G (!connected -> !sendTelemetry)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬connected → ¬sendTelemetry)",
+      "domain": "data_management",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "connected",
+        "sendTelemetry"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.359599"
+    },
+    {
+      "id": "366dd49da602",
+      "nl_statement": "A server must not accept connections when firewall rules are invalid.",
+      "atl_formula": "<<system>> G (firewallInvalid -> !acceptConnections)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (firewallInvalid → ¬acceptConnections)",
+      "domain": "networking",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "firewallInvalid",
+        "acceptConnections"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.359646"
+    },
+    {
+      "id": "986e0a762781",
+      "nl_statement": "A user must not change account settings without an active session.",
+      "atl_formula": "<<system>> G (!activeSession -> !changeSettings)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬activeSession → ¬changeSettings)",
+      "domain": "access_control",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "activeSession",
+        "changeSettings"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.359694"
+    },
+    {
+      "id": "72af1069a651",
+      "nl_statement": "A job must not start until all prerequisite jobs have completed.",
+      "atl_formula": "<<system>> G (!prerequisitesCompleted -> !jobStart)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬prerequisitesCompleted → ¬jobStart)",
+      "domain": "generic",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "jobStart",
+        "prerequisitesCompleted"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.359753"
+    },
+    {
+      "id": "738564a4235d",
+      "nl_statement": "A record must not be updated after it has been archived.",
+      "atl_formula": "<<system>> G (archived -> !updateRecord)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (archived → ¬updateRecord)",
+      "domain": "data_management",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "updateRecord",
+        "archived"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.359799"
+    },
+    {
+      "id": "66b942d4f809",
+      "nl_statement": "A task must not proceed while its parent task is in an error state.",
+      "atl_formula": "<<system>> G (parentError -> !taskProceed)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (parentError → ¬taskProceed)",
+      "domain": "safety_critical",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "taskProceed",
+        "parentError"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.359891"
+    },
+    {
+      "id": "6209c60aee6f",
+      "nl_statement": "A container must not launch unless the required environment variables are provided.",
+      "atl_formula": "<<system>> G (!envProvided -> !launchContainer)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬envProvided → ¬launchContainer)",
+      "domain": "generic",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "envProvided",
+        "launchContainer"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.360066"
+    },
+    {
+      "id": "26e15414c35c",
+      "nl_statement": "A user must not delete audit logs under any condition.",
+      "atl_formula": "<<system>> G (!deleteAuditLogs)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬deleteAuditLogs)",
+      "domain": "access_control",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G"
+      ],
+      "atoms": [
+        "deleteAuditLogs"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.360120"
+    },
+    {
+      "id": "6ccb16b78775",
+      "nl_statement": "A process must not enter the running state unless resources are allocated.",
+      "atl_formula": "<<system>> G (!resourcesAllocated -> !runningState)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬resourcesAllocated → ¬runningState)",
+      "domain": "generic",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "runningState",
+        "resourcesAllocated"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.360171"
+    },
+    {
+      "id": "5b50f212fc89",
+      "nl_statement": "A client must not send data before the handshake is acknowledged.",
+      "atl_formula": "<<system>> G (!handshakeAck -> !sendData)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬handshakeAck → ¬sendData)",
+      "domain": "data_management",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "sendData",
+        "handshakeAck"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.360234"
+    },
+    {
+      "id": "a5f971fa1e99",
+      "nl_statement": "A file must not be overwritten unless write permission is explicitly granted.",
+      "atl_formula": "<<system>> G (!writePermission -> !overwrite)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬writePermission → ¬overwrite)",
+      "domain": "access_control",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "writePermission",
+        "overwrite"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.360299"
+    },
+    {
+      "id": "fd15a69fe5b2",
+      "nl_statement": "A node must not participate in coordination until it has synchronized its clock.",
+      "atl_formula": "<<system>> G (!clockSynced -> !coordinate)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬clockSynced → ¬coordinate)",
+      "domain": "distributed_systems",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "coordinate",
+        "clockSynced"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.360346"
+    },
+    {
+      "id": "1d7a1d10527f",
+      "nl_statement": "A computation must not continue if the safety condition becomes false.",
+      "atl_formula": "<<system>> G (!safetyCondition -> !continueComputation)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬safetyCondition → ¬continueComputation)",
+      "domain": "safety_critical",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "continueComputation",
+        "safetyCondition"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.360441"
+    },
+    {
+      "id": "7c5162b494b1",
+      "nl_statement": "A worker must not access restricted data unless the policy rule is satisfied.",
+      "atl_formula": "<<system>> G (!policySatisfied -> !accessRestrictedData)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬policySatisfied → ¬accessRestrictedData)",
+      "domain": "access_control",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "policySatisfied",
+        "accessRestrictedData"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.360496"
+    },
+    {
+      "id": "931d301da36e",
+      "nl_statement": "A runtime must not load plugins after the secure mode is activated.",
+      "atl_formula": "<<system>> G (secureMode -> !loadPlugin)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (secureMode → ¬loadPlugin)",
+      "domain": "generic",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "secureMode",
+        "loadPlugin"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.360543"
+    },
+    {
+      "id": "4837f3323e25",
+      "nl_statement": "A database must not replicate changes unless replication is enabled.",
+      "atl_formula": "<<system>> G (!replicationEnabled -> !replicateChanges)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬replicationEnabled → ¬replicateChanges)",
+      "domain": "distributed_systems",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "replicateChanges",
+        "replicationEnabled"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.360592"
+    },
+    {
+      "id": "8cafe959cf01",
+      "nl_statement": "A pipeline must not advance stages while a blocking condition is active.",
+      "atl_formula": "<<system>> G (blockingCondition -> !advanceStage)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (blockingCondition → ¬advanceStage)",
+      "domain": "generic",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "advanceStage",
+        "blockingCondition"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.360644"
+    },
+    {
+      "id": "90073b7b642c",
+      "nl_statement": "A message must not be delivered unless the receiver is registered.",
+      "atl_formula": "<<system>> G (!receiverRegistered -> !deliverMessage)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (¬receiverRegistered → ¬deliverMessage)",
+      "domain": "networking",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "receiverRegistered",
+        "deliverMessage"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.360692"
+    },
+    {
+      "id": "9dfe91922368",
+      "nl_statement": "A system must not grant access when authentication has failed.",
+      "atl_formula": "<<system>> G (authenticationFailed -> !grantAccess)",
+      "atl_unicode": "⟨⟨system⟩⟩ G (authenticationFailed → ¬grantAccess)",
+      "domain": "access_control",
+      "source_file": "sample 3.txt",
+      "agents": [
+        "system"
+      ],
+      "operators": [
+        "G",
+        "->"
+      ],
+      "atoms": [
+        "authenticationFailed",
+        "grantAccess"
+      ],
+      "verification_notes": [],
+      "created_at": "2025-11-28T22:47:30.360870"
+    }
+  ],
+  "stats": {
+    "total_samples": 89,
+    "unique_domains": 10,
+    "domain_distribution": {
+      "autonomous_systems": 4,
+      "safety_critical": 6,
+      "aerospace": 2,
+      "industrial_control": 2,
+      "transportation": 1,
+      "distributed_systems": 14,
+      "generic": 31,
+      "access_control": 16,
+      "data_management": 10,
+      "networking": 3
+    },
+    "verified_count": 0,
+    "syntax_valid_count": 0,
+    "unique_agents": 22,
+    "unique_atoms": 128,
+    "avg_complexity": 4.52,
+    "source_file_distribution": {
+      "sample 1.txt": 20,
+      "sample 2.txt": 20,
+      "sample 3.txt": 49
+    },
+    "operator_distribution": {
+      "G": 82,
+      "F": 24,
+      "->": 64,
+      "X": 20,
+      "U": 2
+    }
+  }
+}

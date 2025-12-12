@@ -1,0 +1,177 @@
+[
+  {
+    "sample_id": "sample_001",
+    "nl": "In a smart home environment, the coalition of the security system and the smart lighting agents must ensure that whenever a resident is detected entering the home, the security system will always activate the perimeter lights within 5 seconds to enhance visibility and safety.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_002",
+    "nl": "In a smart home environment, the coalition of the security system and the lighting system must ensure that whenever a door sensor is triggered, the outdoor lights will turn on within 5 seconds and remain on for at least 2 minutes, thereby providing adequate illumination until the door is closed.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_003",
+    "nl": "In a smart home environment, the coalition of security agents must ensure that the front door is always locked when the residents are away, and that alerts are sent to the residents' mobile devices if the door is left unlocked for more than 5 minutes while they are not at home.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_004",
+    "nl": "In a smart home environment, the coalition of the security system and the lighting automation agents must ensure that the living room lights are turned on within 5 seconds after a security breach is detected, and they must maintain this state until the breach is resolved.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_005",
+    "nl": "The coalition of autonomous drones must ensure that, eventually, every package is delivered to its designated location within a 30-minute window after the order is placed, and this guarantee must hold true under all weather conditions.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_006",
+    "nl": "In a smart home environment, the coalition of the security agent and the energy management agent must ensure that the home\u2019s security system is always armed when the occupants are not present, and that it eventually disarms once the occupants return home, maintaining this behavior until the next departure of the occupants.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_007",
+    "nl": "In a smart home environment, the coalition of the security system and smart lighting agents must ensure that whenever a security breach is detected, the lights in the vicinity will turn on within 5 seconds and remain illuminated until the breach is resolved.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_008",
+    "nl": "The coalition of autonomous delivery drones must ensure that for every package dispatched, the package is successfully delivered to its destination within 30 minutes, and this delivery must occur at least once every hour, regardless of the time of day.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_009",
+    "nl": "In a smart home environment, the coalition of energy management agents must ensure that the heating system is always set to an energy-efficient temperature during the daytime hours, and if the indoor temperature drops below a specified threshold, the system must eventually activate the heating until the temperature is restored to a comfortable level.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_010",
+    "nl": "In a smart home environment, the coalition of security agents must ensure that the front door is always locked when the homeowners are away, and if any unauthorized access is attempted, an alert must be sent to the homeowners within 5 minutes.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_011",
+    "nl": "In the context of an autonomous vehicle fleet, the coalition of vehicles shall ensure that for every journey undertaken, each vehicle will always maintain a safe distance from the vehicle in front of it, and if a sudden obstacle is detected, it will eventually come to a complete stop within two seconds.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_012",
+    "nl": "In a smart home environment, the coalition of the security system and environmental sensors must ensure that the living room lights are always turned on whenever the occupancy sensor detects a resident present, and this condition must hold until the resident leaves the room.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_013",
+    "nl": "In a smart home environment, the coalition of the security system and the lighting system must ensure that the living room lights are always turned on within 10 seconds after the security system detects any unauthorized entry, and this must hold true for all instances of unauthorized entry.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_014",
+    "nl": "In a smart home environment, the coalition of security agents must ensure that the front door is always locked whenever the homeowner is away, and if the door is unlocked, it must be locked within 5 minutes.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_015",
+    "nl": "In a smart home environment, the coalition of energy management agents must ensure that the heating system is activated within the next 10 minutes whenever the indoor temperature falls below 18 degrees Celsius, and this condition must always hold during the winter months.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_016",
+    "nl": "In a smart home environment, the security agents must ensure that the front door is always locked when the house is unoccupied, and if the system detects any unauthorized entry, it must send an alert to the homeowner within 5 minutes.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_017",
+    "nl": "In a smart home environment, the coalition of the security system and the smart lighting agents must ensure that if a security breach is detected, then the lights will always turn on within 5 seconds to illuminate the area until the breach is resolved.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_018",
+    "nl": "In the context of a smart home environment, the coalition of the security system and the energy management agent must ensure that whenever a user is present in the home, the security system will always activate the surveillance cameras within 5 seconds of detecting any unauthorized entry, and it must continue to monitor the premises until the user leaves the home.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_019",
+    "nl": "In the context of a smart home system, the coalition of the security agent and the energy management agent must ensure that the home is always in a secure state while the occupants are away; specifically, the security agent must activate the alarm system within the next minute after the last occupant leaves, and the energy management agent must minimize energy consumption until the occupants return.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_020",
+    "nl": "In a smart home environment, the coalition of the security system and the lighting system must ensure that whenever a user is detected entering the home, the security system will always activate the exterior lights within 5 seconds to provide immediate visibility until the user has safely entered the premises.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_021",
+    "nl": "In a smart home environment, the coalition of the security system and the smart lighting agents must ensure that whenever the front door is unlocked, the hallway lights will eventually turn on within 5 seconds to enhance visibility and safety.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_022",
+    "nl": "In an autonomous vehicle fleet, the coalition of vehicles must ensure that for every trip initiated, each vehicle will eventually arrive at its destination safely and without exceeding the speed limit, while always maintaining a safe distance from other vehicles throughout the journey.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_023",
+    "nl": "In a smart home environment, the coalition of the security system and the environmental monitoring agents must ensure that the home is always secured, and if any intrusion is detected, the security system will notify the homeowner within five minutes.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_024",
+    "nl": "In the context of a smart home environment, the coalition of security agents must guarantee that, if a security breach is detected, then the system will always initiate lockdown procedures within 5 seconds and will continue to monitor the premises until the threat is neutralized.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_025",
+    "nl": "The coalition of autonomous delivery drones must ensure that for every package dispatched, it is delivered to the designated recipient's location within 30 minutes, and this must hold true at all times during operational hours.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_026",
+    "nl": "In a smart home environment, the coalition of the security system and the smart lighting agents must ensure that whenever a security breach is detected, the lights in the affected area will always turn on within 5 seconds, providing immediate visibility until the breach is resolved.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_027",
+    "nl": "In a smart home environment, the coalition of security agents must ensure that, eventually, every unauthorized access attempt is detected and reported to the homeowner within five minutes, continuously maintaining this capability regardless of the home\u2019s occupancy status.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_028",
+    "nl": "In a smart home environment, the coalition of the security system and the smart lighting agents must ensure that whenever the front door is opened, the outdoor lights will be activated within the next 5 seconds and will remain on until the door is closed.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_029",
+    "nl": "In a smart home environment, the energy management system must ensure that the heating system is always turned off when the occupants are away, and it must eventually turn on at least one hour before their scheduled return, to ensure the temperature is comfortable upon arrival.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_030",
+    "nl": "In a smart home environment, the coalition of security agents must ensure that the front door is always locked after the last resident leaves the house, and it must remain locked until the first resident returns home.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_031",
+    "nl": "In a smart home environment, the coalition of smart thermostats and occupancy sensors must ensure that the indoor temperature is maintained within the comfort range (20\u00b0C to 24\u00b0C) at all times (always) when the house is occupied.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_032",
+    "nl": "In a smart home environment, the coalition of the security system and smart lighting agents must ensure that if a security breach is detected, then the lights will turn on within five seconds and remain on until the breach is resolved.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_033",
+    "nl": "In a smart home environment, the coalition of the security system and the lighting agents must ensure that whenever a user is present in the home, the security system will always activate the exterior lights within 5 seconds to enhance visibility and safety.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_034",
+    "nl": "In a smart home environment, the coalition of security and environmental control agents must ensure that the home is always secured (locked doors and windows) until a resident arrives, at which point the system should eventually transition to an energy-saving mode within 10 minutes of the resident's arrival.",
+    "generator": "openai"
+  },
+  {
+    "sample_id": "sample_035",
+    "nl": "In a smart home environment, the coalition of the security system and the thermostat must ensure that the temperature in the living room is maintained between 68\u00b0F and 72\u00b0F at all times (always), while also guaranteeing that the security alerts are activated within 5 seconds of detecting any unauthorized entry (eventually) during the night hours.",
+    "generator": "openai"
+  }
+]
